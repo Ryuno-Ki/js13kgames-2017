@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "inliner src/index.html > dist/index.html",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
