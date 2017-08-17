@@ -6,7 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["js13kgames", "lost", "labyrinth"],
+  "keywords": [
+    "js13kgames",
+    "lost",
+    "labyrinth"
+  ],
   "author": "André Jaenisch",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "inliner": "^1.12.3"
+  }
 }
