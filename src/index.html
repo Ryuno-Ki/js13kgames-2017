@@ -5,8 +5,44 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>JS13kgames 2017</title>
+  <style type="text/css">
+    svg {
+      min-height: 100vh;
+      min-width: 100vw;
+    }
+
+    .wall {
+      fill: white;
+      stroke: black;
+      stroke-width: 2;
+    }
+  </style>
 </head>
   <body>
-    Index
+    <svg xmlns="http://www.w3.org/2000/svg" viewport="0 0 100 100">
+    </svg>
+
+    <script type="text/javascript">
+      (() => {
+        class Wall {
+          render() {
+            const path = document.createElement('path');
+            path.setAttribute('class', 'wall');
+            path.setAttribute('d', `M50 50 A ${this.r} ${this.r} 0 1 0 ${this.x} ${this.y}`);
+            return path;
+          }
+
+          constructor(x, y, r) {
+            this.x = x || 50;
+            this.y = y || 50;
+            this.r = r || 10;
+          }
+        }
+
+        const canvas = document.querySelector('svg');
+        const wall = new Wall();
+        canvas.appendChild(wall.render());
+      })();
+    </script>
   </body>
 </html>
