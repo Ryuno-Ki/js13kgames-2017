@@ -1,0 +1,12 @@
+{
+  "name": "js13kgames-2017",
+  "version": "1.0.0",
+  "description": "This is my entry for the js13kgames competition 2017.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["js13kgames", "lost", "labyrinth"],
+  "author": "André Jaenisch",
+  "license": "GPL-3.0"
+}
