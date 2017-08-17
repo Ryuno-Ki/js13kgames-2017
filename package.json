@@ -4,6 +4,7 @@
   "description": "This is my entry for the js13kgames competition 2017.",
   "main": "index.js",
   "scripts": {
+    "build": "inliner src/index.html > dist/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
