@@ -6,42 +6,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>JS13kgames 2017</title>
   <style type="text/css">
-    svg {
-      min-height: 100vh;
-      min-width: 100vw;
-    }
-
-    .wall {
-      fill: white;
-      stroke: black;
-      stroke-width: 2;
+    body {
+      background-color: white;
+      color: black;
     }
   </style>
 </head>
   <body>
-    <svg xmlns="http://www.w3.org/2000/svg" viewport="0 0 100 100">
-    </svg>
+    <h1>Canvas</h1>
+    <canvas id="game"></canvas>
 
     <script type="text/javascript">
       (() => {
-        class Wall {
-          render() {
-            const path = document.createElement('path');
-            path.setAttribute('class', 'wall');
-            path.setAttribute('d', `M50 50 A ${this.r} ${this.r} 0 1 0 ${this.x} ${this.y}`);
-            return path;
+        class Game {
+          addWall(wall) {
+            this.walls.push(wall);
           }
 
-          constructor(x, y, r) {
-            this.x = x || 50;
-            this.y = y || 50;
-            this.r = r || 10;
+          getHeight() {
+            return this.height;
+          }
+
+          getWidth() {
+            return this.width;
+          }
+
+          setHero(hero) {
+            this.hero = hero;
+          }
+
+          update() {
+            const context = this.context;
+            const x = this.width / 2;
+            const y = this.height / 2;
+
+            this.walls.forEach((wall) => {
+              wall.render(context, x, y);
+            });
+
+            this.hero.render(context, x * Math.random(), y * Math.random());
+          }
+
+          constructor(canvasId, height, width) {
+            const canvas = document.getElementById('game');
+            canvas.setAttribute('height', height + 'px');
+            canvas.setAttribute('width', width + 'px');
+
+            this.context = canvas.getContext('2d');
+            this.height = parseInt(height, 10);
+            this.width = parseInt(width, 10);
+
+            this.hero = null;
+            this.walls = [];
           }
         }
 
-        const canvas = document.querySelector('svg');
-        const wall = new Wall();
-        canvas.appendChild(wall.render());
+        class Hero {
+          render(context, x, y) {
+            const fullCircleInRadians = 2 * Math.PI;
+            const startAngle = 0;
+            const endAngle = 0.9 * fullCircleInRadians;
+
+            context.beginPath();
+            context.arc(x, y, this.radius, startAngle, endAngle);
+            context.fill();
+          }
+
+          constructor(diameter) {
+            this.radius = diameter / 2;
+          }
+        }
+
+        class Wall {
+          randomiseGate() {
+            const fullCircleInRadians = 2 * Math.PI;
+            const gate = Math.random() * fullCircleInRadians;
+            const startAngle = 0 + gate;
+            const endAngle = 0.9 * fullCircleInRadians + gate;
+
+            return {
+              end: endAngle,
+              start: startAngle,
+            }
+          }
+
+          render(context, x, y) {
+            console.log('Render wall', this, context, x, y);
+            const { start, end } = this.randomiseGate();
+
+            context.beginPath();
+            context.arc(x, y, this.radius, start, end);
+            context.stroke();
+          }
+
+          constructor(radius) {
+            this.radius = radius;
+          }
+        }
+
+        const game = new Game('game', 300, 300);
+        const fullCircleInRadians = 2 * Math.PI;
+        const paddingBetweenWalls = 0.9 * 3 * fullCircleInRadians;
+        game.setHero(new Hero(paddingBetweenWalls / 2));
+
+        [1, 2, 3, 4, 5, 6].forEach((level) => {
+          const wall = new Wall(level * paddingBetweenWalls);
+          game.addWall(wall);
+        });
+
+        game.update();
+
       })();
     </script>
   </body>
