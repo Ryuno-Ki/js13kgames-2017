@@ -7,8 +7,12 @@ This is my entry for the js13kgames competition 2017.
 ```sh
 git clone https://github.com/Ryuno-Ki/js13kgames-2017.git
 cd js13kgames-2017/
-npm start
 ```
+
+## Local development
+
+`npm start` and then visiting [localhost:3000](http://localhost:3000) in a
+web browser.
 
 ## Bundling and shipping
 
