@@ -4,7 +4,8 @@
   "description": "This is my entry for the js13kgames competition 2017.",
   "main": "index.js",
   "scripts": {
-    "build": "inliner src/index.html > dist/index.html",
+    "build": "pug --basedir dist/ src/ -o dist/",
+    "prebuild": "rollup -c",
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,7 +16,16 @@
   ],
   "author": "André Jaenisch",
   "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ryuno-Ki/js13kgames-2017.git"
+  },
   "devDependencies": {
-    "inliner": "^1.12.3"
+    "pug": "^2.0.0-rc.3",
+    "pug-cli": "^1.0.0-alpha6",
+    "rollup": "^0.48.2",
+    "rollup-plugin-filesize": "^1.4.2",
+    "rollup-plugin-uglify": "^2.0.1",
+    "uglify-es": "^3.0.28"
   }
 }

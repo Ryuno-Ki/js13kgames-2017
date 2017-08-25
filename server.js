@@ -4,7 +4,7 @@ const path = require('path');
 const process = require('process');
 
 const PORT = 3000;
-const sourceFile = path.resolve(__dirname, 'src', 'index.html');
+const sourceFile = path.resolve(__dirname, 'dist', 'index.html');
 
 http.createServer((request, response) => {
   fs.readFile(sourceFile, 'utf8', ((error, data) => {
