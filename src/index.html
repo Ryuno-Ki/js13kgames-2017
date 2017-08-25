@@ -23,8 +23,86 @@
             this.walls.push(wall);
           }
 
+          compareAngle() {
+            const hero = this.hero;
+            const position = Helper.mapCartesianToPolar(
+              Helper.coordinationSystemToCenter(hero.x, hero.y)
+            );
+            const positionOfHero = position.r + hero.radius;
+            const paddingBetweenWalls = this.paddingBetweenWalls;
+
+            const collision = this.walls.filter((wall) => {
+              // Only need to look at adjacent walls
+              if (positionOfHero - wall.radius > paddingBetweenWalls) {
+                return false;
+              }
+              if (wall.radius - positionOfHero > paddingBetweenWalls) {
+                return false;
+              }
+              return true;
+            }).map((wall) => {
+              // atan2 (hero) is measuring from x-axis counterclockwise
+              // canvas is drawing from x-axis clockwise
+              // hence, translate hero and normalise angles
+              const startGate = Helper.normaliseAngle(wall.startGate)
+              const endGate = Helper.normaliseAngle(wall.endGate);
+              const heroAngle = Helper.normaliseAngle(2*Math.PI - position.phi);
+
+              if (startGate < heroAngle && endGate > heroAngle) {
+                return false;
+              }
+              return true;
+            }).reduce((summary, current) => {
+              return summary || current;
+            });
+            return true;
+          }
+
+          compareRadii() {
+            const hero = this.hero;
+            const position = Helper.mapCartesianToPolar(
+              Helper.coordinationSystemToCenter(hero.x, hero.y)
+            );
+            const positionOfHero = position.r + hero.radius;
+            const paddingBetweenWalls = this.paddingBetweenWalls;
+
+            const collision = this.walls.map((wall) => {
+              // Only need to compare radius
+              return wall.radius;
+            }).filter((wallRadius) => {
+              // Only need to look at adjacent walls
+              if (positionOfHero - wallRadius > paddingBetweenWalls) {
+                return false;
+              }
+              if (wallRadius - positionOfHero > paddingBetweenWalls) {
+                return false;
+              }
+              return true;
+            }).map((wallRadius) => {
+              // Does hero circle intersect with wall?
+              if (position.r - hero.radius > wallRadius) {
+                return false;
+              }
+              if (position.r + hero.radius < wallRadius) {
+                return false;
+              }
+              return true;
+            }).reduce((summary, intersection) => {
+              // Is any value true?
+              return summary || intersection;
+            });
+            return collision;
+          }
+
+          detectCollision() {
+            return this.compareAngle() && this.compareRadii();
+          }
+
           draw() {
             const context = this.context;
+            if (this.detectCollision()) {
+              console.warn('Code RED');
+            }
             context.clearRect(0, 0, this.width, this.height);
             this.drawWalls();
             this.hero.render(context);
@@ -39,44 +117,20 @@
             });
           }
 
-          getHeight() {
-            return this.height;
-          }
-
-          getWidth() {
-            return this.width;
-          }
-
           init() {
-            const fullCircleInRadians = 2 * Math.PI;
-            const paddingBetweenWalls = 0.9 * 3 * fullCircleInRadians;
             this.setHero(new Hero(
-              paddingBetweenWalls / 2,
+              this.paddingBetweenWalls / 2,
               this.width / 2,
               this.height / 2,
             ));
 
             [1, 2, 3, 4, 5, 6].forEach((level) => {
-              const wall = new Wall(level * paddingBetweenWalls);
+              const wall = new Wall(level * this.paddingBetweenWalls);
               this.addWall(wall);
             });
 
             this.registerArrowKeyHandlers();
             window.requestAnimationFrame(this.update.bind(this));
-          }
-
-          mapCartesianToPolar(cartesian) {
-            const { x, y } = cartesian;
-            const r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-            const phi = Math.atan2(y, x);
-            return { r, phi };
-          }
-
-          mapPolarToCartesian(polar) {
-              const { r, phi } = polar;
-              const x = r * Math.cos(phi);
-              const y = r * Math.sin(phi);
-              return { x, y };
           }
 
           registerArrowKeyHandlers() {
@@ -92,20 +146,23 @@
               switch(key) {
                 case keymap.LEFT:
                   this.hero.moveLeft();
+                  event.preventDefault();
                   break;
                 case keymap.UP:
                   this.hero.moveUp();
+                  event.preventDefault();
                   break;
                 case keymap.RIGHT:
                   this.hero.moveRight();
+                  event.preventDefault();
                   break;
                 case keymap.DOWN:
                   this.hero.moveDown();
+                  event.preventDefault();
                   break;
                 default:
                   console.log('Received keyCode', event.keyCode);
               }
-              event.preventDefault();
               window.requestAnimationFrame(this.update.bind(this));
             }, false);
           }
@@ -115,7 +172,7 @@
           }
 
           update(timestamp) {
-            const fps = 60;  // in s
+            const fps = 60;
             const progress = timestamp - this.lastUpdateTimestamp;
             const isInitialDraw = progress < 0;
 
@@ -126,8 +183,10 @@
             }
           }
 
-          constructor(canvasId, height, width) {
+          constructor(canvasId) {
             const canvas = document.getElementById('game');
+            const height = World.HEIGHT;
+            const width = World.WIDTH;
             canvas.setAttribute('height', height + 'px');
             canvas.setAttribute('width', width + 'px');
 
@@ -139,6 +198,43 @@
             this.hero = null;
             this.lastUpdateTimestamp = Number(new Date());
             this.walls = [];
+
+            const fullCircleInRadians = 2 * Math.PI;
+            this.paddingBetweenWalls = 0.9 * 3 * fullCircleInRadians;
+          }
+        }
+
+        class Helper {
+          static coordinationSystemToCenter(p, q) {
+            // (p, q) are measured from top-left corner
+            // (x, y) are center of circles
+            const x = p - World.WIDTH / 2;
+            const y = q - World.HEIGHT / 2;
+            return { x, y }
+          }
+
+          static mapCartesianToPolar(cartesian) {
+            const { x, y } = cartesian;
+            const r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+            const phi = Math.atan2(y, x);
+            return { r, phi };
+          }
+
+          static mapPolarToCartesian(polar) {
+              const { r, phi } = polar;
+              const x = r * Math.cos(phi);
+              const y = r * Math.sin(phi);
+              return { x, y };
+          }
+
+          static normaliseAngle(angle) {
+            const fullCircleInRadians = 2 * Math.PI;
+            /*
+            if (angle < 0) {
+              return (angle + fullCircleInRadians) % fullCircleInRadians
+            }
+            */
+            return angle % fullCircleInRadians;
           }
         }
 
@@ -182,7 +278,7 @@
             const fullCircleInRadians = 2 * Math.PI;
             const gate = Math.random() * fullCircleInRadians;
             const startAngle = 0 + gate;
-            const endAngle = 0.9 * fullCircleInRadians + gate;
+            const endAngle = Helper.normaliseAngle(startAngle + 0.1 * fullCircleInRadians);
 
             return {
               end: endAngle,
@@ -191,8 +287,10 @@
           }
 
           render(context, x, y) {
+            // Since the gate shall be spared out from circle, switch its start
+            // and end when drawing the arc
             context.beginPath();
-            context.arc(x, y, this.radius, this.startAngle, this.endAngle);
+            context.arc(x, y, this.radius, this.endGate, this.startGate);
             context.stroke();
           }
 
@@ -200,12 +298,22 @@
             const { start, end } = this.randomiseGate();
 
             this.radius = radius;
-            this.startAngle = start;
-            this.endAngle = end;
+            this.startGate = start;
+            this.endGate = end;
           }
         }
 
-        const game = new Game('game', 300, 300);
+        class World {
+          static get HEIGHT() {
+            return 300;
+          }
+
+          static get WIDTH() {
+            return 300;
+          }
+        }
+
+        const game = new Game('game');
         game.init();
       })();
     </script>
