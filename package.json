@@ -7,6 +7,7 @@
     "compile": "pug --basedir dist/ src/ -o dist/",
     "build:prod": "npm run compile",
     "build:dev": "npm run compile",
+    "flow": "flow",
     "prebuild:dev": "rollup -c",
     "prebuild:prod": "NODE_ENV='production' rollup -c",
     "start": "node server.js",
@@ -24,11 +25,13 @@
     "url": "https://github.com/Ryuno-Ki/js13kgames-2017.git"
   },
   "devDependencies": {
+    "flow-bin": "^0.53.1",
     "pug": "^2.0.0-rc.3",
     "pug-cli": "^1.0.0-alpha6",
     "rollup": "^0.48.2",
     "rollup-plugin-eslint": "^4.0.0",
     "rollup-plugin-filesize": "^1.4.2",
+    "rollup-plugin-flow": "^1.1.1",
     "rollup-plugin-uglify": "^2.0.1",
     "uglify-es": "^3.0.28"
   }
