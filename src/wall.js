@@ -10,7 +10,7 @@ export class Wall {
     return {
       end: endAngle,
       start: startAngle,
-    }
+    };
   }
 
   render(context, x, y) {

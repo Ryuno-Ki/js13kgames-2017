@@ -30,7 +30,7 @@ export class Game {
       // atan2 (hero) is measuring from x-axis counterclockwise
       // canvas is drawing from x-axis clockwise
       // hence, translate hero and normalise angles
-      const startGate = Helper.normaliseAngle(wall.startGate)
+      const startGate = Helper.normaliseAngle(wall.startGate);
       const endGate = Helper.normaliseAngle(wall.endGate);
       const heroAngle = Helper.normaliseAngle(2*Math.PI - position.phi);
 
@@ -104,11 +104,12 @@ export class Game {
   }
 
   init() {
-    this.setHero(new Hero(
+    const hero = new Hero(
       this.paddingBetweenWalls / 2,
       this.width / 2,
-      this.height / 2,
-    ));
+      this.height / 2
+    );
+    this.setHero(hero);
 
     [1, 2, 3, 4, 5, 6].forEach((level) => {
       const wall = new Wall(level * this.paddingBetweenWalls);

@@ -36,3 +36,4 @@ git push
 * [] Add a "fork me on GitHub" and js13kgames link
 * [] Add some story elements (translateable?)
 * [] Refactor code to central state
+* [] Read https://code.lengstorf.com/learn-rollup-js/

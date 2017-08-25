@@ -6,7 +6,7 @@ export class Helper {
     // (x, y) are center of circles
     const x = p - World.WIDTH / 2;
     const y = q - World.HEIGHT / 2;
-    return { x, y }
+    return { x, y };
   }
 
   static mapCartesianToPolar(cartesian) {

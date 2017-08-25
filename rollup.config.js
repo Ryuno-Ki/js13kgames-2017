@@ -1,10 +1,12 @@
 import { env } from 'process';
 import { join } from 'path';
 
+import eslint from 'rollup-plugin-eslint';
 import filesize from 'rollup-plugin-filesize';
 import uglify from 'rollup-plugin-uglify';
 import { minify } from 'uglify-es';  // needed to make rollup understand ES6
 
+const eslintOptions = { throwOnError: true };
 const filesizeOptions = { format: { exponent: 0 } };
 const uglifyOptions = {};
 
@@ -15,6 +17,7 @@ export default {
     format: 'iife'
   },
   plugins: [
+    eslint(eslintOptions),
     uglify(uglifyOptions, minify),
     filesize(filesizeOptions),
   ],
