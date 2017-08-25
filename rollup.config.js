@@ -1,3 +1,4 @@
+import { env } from 'process';
 import { join } from 'path';
 
 import filesize from 'rollup-plugin-filesize';
@@ -17,5 +18,5 @@ export default {
     uglify(uglifyOptions, minify),
     filesize(filesizeOptions),
   ],
-  sourcemap: 'inline',
+  sourcemap: env.NODE_ENV === 'production' ? false : 'inline',
 };

@@ -4,8 +4,11 @@
   "description": "This is my entry for the js13kgames competition 2017.",
   "main": "index.js",
   "scripts": {
-    "build": "pug --basedir dist/ src/ -o dist/",
-    "prebuild": "rollup -c",
+    "compile": "pug --basedir dist/ src/ -o dist/",
+    "build:prod": "npm run compile",
+    "build:dev": "npm run compile",
+    "prebuild:dev": "rollup -c",
+    "prebuild:prod": "NODE_ENV='production' rollup -c",
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
