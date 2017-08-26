@@ -20,7 +20,7 @@ export class Swipe {
   yUp: number;
 
   handleTouchMove(event: TouchEvent): void {
-    if ( !this.xDown || !this.yDown ) {
+    if (!this.xDown || !this.yDown) {
       return;
     }
 
@@ -72,7 +72,7 @@ export class Swipe {
 
     this.element.addEventListener('touchstart', this.onTouchStart.bind(this), false);
 
-    const { onDown, onLeft, onRight, onUp } = callbacks;
-    this.handlers = { onDown, onLeft, onRight, onUp };
+    const {onDown, onLeft, onRight, onUp} = callbacks;
+    this.handlers = {onDown, onLeft, onRight, onUp};
   }
 }

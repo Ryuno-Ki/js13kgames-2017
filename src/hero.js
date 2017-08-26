@@ -1,9 +1,9 @@
 //@flow
 import { Helper } from './helper';
-import { Action, Store } from './store';
+import type { IAction, Store } from './store';
 import { World } from './world';
 
-export interface HeroState {
+export interface IHeroState {
   angle: number;
   name: string;
   radius: number;
@@ -16,7 +16,7 @@ export class Hero {
 
   static registerStore(globalStore: Store): Store {
     const now = new Date();
-    const heroStore: HeroState = {
+    const heroStore: IHeroState = {
       angle: 0,
       name: 'Jane Doe',
       radius: 0,
@@ -31,7 +31,7 @@ export class Hero {
     return this.globalStore.get('user');
   }
 
-  set store(action: Action) {
+  set store(action: IAction) {
     this.globalStore.dispatch(action);
   }
 

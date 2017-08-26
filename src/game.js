@@ -1,10 +1,13 @@
 //@flow
 import { Helper } from './helper';
-import { Hero, HeroState } from './hero';
+import { Hero } from './hero';
+import type { IHeroState } from './hero';
 import { Store } from './store';
 import { Swipe } from './swipe';
-import { Wall, WallState } from './wall';
-import { World, WorldState } from './world';
+import { Wall } from './wall';
+import type { IWallState } from './wall';
+import { World } from './world';
+import type { IWorldState } from './world';
 
 interface Keymap {
   DOWN: number;
@@ -14,15 +17,16 @@ interface Keymap {
 }
 
 interface State {
-  user: HeroState;
-  walls: WallState[];
-  world: WorldState;
+  user: IHeroState;
+  walls: IWallState[];
+  world: IWorldState;
 }
 
 export class Game {
   /* Properties */
   hero: Hero;
   lastUpdateTimestamp: number;
+  startTime: Date;
   state: State;
   walls: Wall[];
   world: World;
@@ -38,6 +42,7 @@ export class Game {
 
   static notifyUser() {
     const now = (new Date()).toISOString();
+    // eslint-disable-next-line no-console
     console.log('Hit wall', now);
     window.document.body.classList.add('flash');
     setTimeout(() => { window.document.body.classList.remove('flash'); }, 500);
@@ -169,7 +174,7 @@ export class Game {
         event.preventDefault();
         break;
       default:
-        // FIXME: Handle it. Neither console.log nor removing default branch
+        // eslint-disable-next-line no-console
         console.log('Received keyCode', event.keyCode);
     }
     window.requestAnimationFrame(update.bind(self));
@@ -227,7 +232,7 @@ export class Game {
   updateTimer() {
     const start = this.startTime;
     const now = new Date();
-    const elapsed = Math.round((now - start) / 1000, 0);
+    const elapsed = Math.round((now - start) / 1000);
     World.updateTimer(elapsed);
   }
 

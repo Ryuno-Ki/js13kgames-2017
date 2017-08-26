@@ -1,14 +1,15 @@
 //@flow
-import { CartesianSystem, Helper } from './helper';
+import { Helper } from './helper';
+import type { ICartesianSystem } from './helper';
 
-interface Gate {
+interface IGate {
   end: number;
   start: number;
 }
 
-export interface WallState {
+export interface IWallState {
   radius: number;
-  gate: Gate;
+  gate: IGate;
 }
 
 export class Wall {
@@ -17,7 +18,7 @@ export class Wall {
   radius: number;
   startGate: number;
 
-  static randomiseGate(): Gate {
+  static randomiseGate(): IGate {
     const fullCircleInRadians = 2 * Math.PI;
     const gate = Math.random() * fullCircleInRadians;
     const startAngle = 0 + gate;

@@ -1,9 +1,9 @@
 //@flow
 import { Helper } from './helper';
-import { Hero } from './hero';
-import { Wall } from './wall';
+import type { Hero } from './hero';
+import type { Wall } from './wall';
 
-export interface WorldState {
+export interface IWorldState {
   height: number;
   width: number;
 }

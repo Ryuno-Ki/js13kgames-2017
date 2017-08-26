@@ -1,5 +1,5 @@
 //@flow
-export interface Action {
+export interface IAction {
   key: string;
   payload: any;  // FIXME should be generic object
   type: string;
@@ -10,7 +10,7 @@ export class Store {
   actions: any;  // FIXME should be generic object
   store: any;  // FIXME should be generic object
 
-  dispatch(action: Action) {
+  dispatch(action: IAction) {
     const { payload, type } = action;
     this.update(action);
 
@@ -38,7 +38,7 @@ export class Store {
     }
   }
 
-  update(action: Action) {
+  update(action: IAction) {
     const { key, payload } = action;
     const substore = this.store[key];
     this.store[key] = Object.assign(substore, payload);

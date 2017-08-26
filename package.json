@@ -38,7 +38,9 @@
     "rollup-plugin-eslint": "^4.0.0",
     "rollup-plugin-filesize": "^1.4.2",
     "rollup-plugin-flow": "^1.1.1",
+    "rollup-plugin-serve": "^0.4.2",
     "rollup-plugin-uglify": "^2.0.1",
+    "rollup-plugin-visualizer": "^0.3.1",
     "uglify-es": "^3.0.28"
   }
 }
