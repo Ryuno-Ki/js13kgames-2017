@@ -14,7 +14,7 @@ interface Keymap {
 
 export class Game {
   /* Properties */
-  context: any; /* FIXME: type should be CanvasRenderingContext2d */;
+  context: any; /* FIXME: type should be CanvasRenderingContext2d */
   element: HTMLCanvasElement;
   hero: Hero;
   lastUpdateTimestamp: number;
@@ -28,6 +28,13 @@ export class Game {
       'RIGHT': 39,
       'DOWN': 40,
     };
+  }
+
+  static notifyUser() {
+    const now = (new Date()).toISOString();
+    const text = `Code Red at ${now}!`;
+    const element = window.document.createTextNode(text);
+    window.document.body.appendChild(element);
   }
 
   addWall(wall: Wall) {
@@ -66,7 +73,7 @@ export class Game {
     }).reduce((summary, current) => {
       return summary || current;
     });
-    return true;
+    return collision;
   }
 
   compareRadii(): boolean {
@@ -110,11 +117,12 @@ export class Game {
   }
 
   draw() {
+    if (this.detectCollision()) { Game.notifyUser(); }
+
     const context = this.context;
-    if (this.detectCollision()) {
-      console.warn('Code RED');
-    }
-    context.clearRect(0, 0, World.WIDTH, World.HEIGHT);
+    const leftEdge = 0;
+    const topEdge = 0;
+    context.clearRect(leftEdge, topEdge, World.WIDTH, World.HEIGHT);
     this.drawWalls();
     this.hero.render(context);
   }
@@ -161,6 +169,7 @@ export class Game {
         event.preventDefault();
         break;
       default:
+        // FIXME: Handle it. Neither console.log nor removing default branch
         console.log('Received keyCode', event.keyCode);
     }
     window.requestAnimationFrame(this.update.bind(this));

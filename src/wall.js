@@ -12,7 +12,7 @@ export class Wall {
   radius: number;
   startGate: number;
 
-  randomiseGate(): Gate {
+  static randomiseGate(): Gate {
     const fullCircleInRadians = 2 * Math.PI;
     const gate = Math.random() * fullCircleInRadians;
     const startAngle = 0 + gate;
@@ -35,7 +35,7 @@ export class Wall {
   }
 
   constructor(radius: number) {
-    const { start, end } = this.randomiseGate();
+    const { start, end } = Wall.randomiseGate();
 
     this.radius = radius;
     this.startGate = start;
