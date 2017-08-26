@@ -12,9 +12,13 @@
     "postlint": "npm run rollup:dev",
     "prebuild:dev": "npm run rollup:dev",
     "prebuild:prod": "npm run rollup:prod",
+    "prestart:dev": "npm run prebuild:dev",
+    "prestart:prod": "npm run prebuild:prod",
     "rollup:dev": "rollup -c",
     "rollup:prod": "NODE_ENV='production' rollup -c",
     "start": "nodemon ./server.js",
+    "start:dev": "npm run start",
+    "start:prod": "npm run start",
     "test": "mocha -b --ui bdd -r chai/register-expect src/*.spec.js"
   },
   "keywords": [

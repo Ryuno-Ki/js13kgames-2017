@@ -17,7 +17,6 @@ interface PolarSystem {
 }
 
 export class Helper {
-  // eslint-disable-next-line space-in-parens
   static coordinationSystemToCenter(p: number, q: number): ICartesianSystem {
     // (p, q) are measured from top-left corner
     // (x, y) are center of circles
@@ -26,7 +25,6 @@ export class Helper {
     return { x, y };
   }
 
-  // eslint-disable-next-line space-in-parens
   static coordinationSystemToVertex(x: number, y: number): ICoordinationSystem {
     // (p, q) are measured from top-left corner
     // (x, y) are center of circles
@@ -35,12 +33,10 @@ export class Helper {
     return { p, q };
   }
 
-  // eslint-disable-next-line space-in-parens
   static euclideanDistance(x: number, y: number): number {
     return Math.sqrt(x * x + y * y);
   }
 
-  // eslint-disable-next-line space-in-parens
   static mapCartesianToPolar(cartesian: ICartesianSystem): PolarSystem {
     const { x, y } = cartesian;
     const r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
@@ -48,7 +44,11 @@ export class Helper {
     return { r, phi };
   }
 
-  // eslint-disable-next-line space-in-parens
+  static mapDegreeToRadians(degree: number) {
+    // degree : 360 = radians : 2 * Math.PI
+    return degree * Math.PI / 180;
+  }
+
   static mapPolarToCartesian(polar: PolarSystem): ICartesianSystem {
       const { r, phi } = polar;
       const x = r * Math.cos(phi);
@@ -56,9 +56,16 @@ export class Helper {
       return { x, y };
   }
 
-  // eslint-disable-next-line space-in-parens
+  static mapRadiansToDegree(radians: number) {
+    // degree : 360 = radians : 2 * Math.PI
+    return radians * 180 / Math.PI;
+  }
+
   static normaliseAngle(angle: number): number {
     const fullCircleInRadians = 2 * Math.PI;
+    if (angle < 0) {
+      return (angle + fullCircleInRadians) % fullCircleInRadians;
+    }
     return angle % fullCircleInRadians;
   }
 }

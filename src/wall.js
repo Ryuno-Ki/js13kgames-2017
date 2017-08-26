@@ -1,6 +1,7 @@
 //@flow
 import { Helper } from './helper';
 import type { ICartesianSystem } from './helper';
+import { World } from './world';
 
 interface IGate {
   end: number;
@@ -22,7 +23,9 @@ export class Wall {
     const fullCircleInRadians = 2 * Math.PI;
     const gate = Math.random() * fullCircleInRadians;
     const startAngle = 0 + gate;
-    const endAngle = Helper.normaliseAngle(startAngle + 0.1 * fullCircleInRadians);
+    const endAngle = Helper.normaliseAngle(
+      startAngle + World.GATESIZE * fullCircleInRadians
+    );
 
     return {
       end: endAngle,

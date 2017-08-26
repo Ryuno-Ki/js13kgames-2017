@@ -22,16 +22,20 @@ export class World {
     return element;
   }
 
+  static get GATESIZE(): number {
+    return 0.15;
+  }
+
   static get HEIGHT(): number {
-    return 300;
+    return Math.min(window.innerHeight, window.innerWidth);
   }
 
   static get USERSIZE(): number {
-    return 0.01 * Helper.euclideanDistance(World.HEIGHT, World.WIDTH);
+    return World.WALLDISTANCE / 3;
   }
 
   static get USERROTATION(): number {
-    return 2.5;
+    return Helper.mapDegreeToRadians(5);
     // return 0.02 * Helper.euclideanDistance(World.HEIGHT, World.WIDTH);
   }
 
@@ -41,11 +45,11 @@ export class World {
   }
 
   static get WALLDISTANCE(): number {
-    return 0.03 * Helper.euclideanDistance(World.HEIGHT, World.WIDTH);
+    return 0.06 * (World.HEIGHT + World.WIDTH) / 2;
   }
 
   static get WIDTH(): number {
-    return 300;
+    return Math.min(window.innerHeight, window.innerWidth);
   }
 
   static updateTimer(elapsedTime) {
@@ -70,6 +74,10 @@ export class World {
     const context = this.context;
     const { x, y } = hero;
 
+    // FIXME: Read from hero instance
+    const hit = false;
+    context.fillStyle = hit ? 'red' : 'black';
+
     context.beginPath();
     context.arc(x, y, size, startAngle, endAngle);
     context.fill();
@@ -80,6 +88,10 @@ export class World {
     const y = World.HEIGHT / 2;
     const context = this.context;
     const { endGate, radius, startGate } = wall;
+
+    // FIXME: Read from hero instance
+    // const hit = false;
+    // context.strokeStyle = hit ? 'red' : 'black';
 
     // Since the gate shall be spared out from circle, switch its start
     // and end when drawing the arc

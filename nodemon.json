@@ -1,0 +1,7 @@
+{
+  "events": {
+    "restart": "npm run build:prod"
+  },
+  "ignore": ["dist"],
+  "verbose": true
+}
