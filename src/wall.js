@@ -6,6 +6,11 @@ interface Gate {
   start: number;
 }
 
+export interface WallState {
+  radius: number;
+  gate: Gate;
+}
+
 export class Wall {
   /* properties */
   endGate: number;

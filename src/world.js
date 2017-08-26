@@ -1,4 +1,9 @@
 //@flow
+export interface WorldState {
+  height: number;
+  width: number;
+}
+
 export class World {
   static create(id: string): HTMLCanvasElement {
     const element = document.createElement('canvas');

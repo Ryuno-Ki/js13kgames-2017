@@ -1,15 +1,21 @@
 //@flow
 import { Helper } from './helper';
-import { Hero } from './hero';
+import { Hero, HeroState } from './hero';
 import { Swipe } from './swipe';
-import { Wall } from './wall';
-import { World } from './world';
+import { Wall, WallState } from './wall';
+import { World, WorldState } from './world';
 
 interface Keymap {
   DOWN: number;
   LEFT: number;
   RIGHT: number;
   UP: number;
+}
+
+interface State {
+  user: HeroState;
+  walls: WallState[];
+  world: WorldState;
 }
 
 export class Game {
@@ -19,6 +25,7 @@ export class Game {
   hero: Hero;
   lastUpdateTimestamp: number;
   paddingBetweenWalls: number;
+  state: State;
   walls: Wall[];
 
   static get KEYMAP(): Keymap {
@@ -137,6 +144,9 @@ export class Game {
   }
 
   init() {
+    const self = this;
+    const update = this.update;
+
     [1, 2, 3, 4, 5, 6].forEach((level) => {
       const wall = new Wall(level * this.paddingBetweenWalls);
       this.addWall(wall);
@@ -144,35 +154,38 @@ export class Game {
 
     this.registerArrowKeyHandlers();
     this.registerSwipeHandlers();
-    window.requestAnimationFrame(this.update.bind(this));
+    window.requestAnimationFrame(update.bind(self));
   }
 
   onKeyDown(event: KeyboardEvent) {
+    const hero = this.hero;
     const key = event.keyCode;
     const keymap = Game.KEYMAP;
+    const self = this;
+    const update = this.update;
 
     switch(key) {
       case keymap.LEFT:
-        this.hero.moveLeft();
+        hero.moveLeft();
         event.preventDefault();
         break;
       case keymap.UP:
-        this.hero.moveUp();
+        hero.moveUp();
         event.preventDefault();
         break;
       case keymap.RIGHT:
-        this.hero.moveRight();
+        hero.moveRight();
         event.preventDefault();
         break;
       case keymap.DOWN:
-        this.hero.moveDown();
+        hero.moveDown();
         event.preventDefault();
         break;
       default:
         // FIXME: Handle it. Neither console.log nor removing default branch
         console.log('Received keyCode', event.keyCode);
     }
-    window.requestAnimationFrame(this.update.bind(this));
+    window.requestAnimationFrame(update.bind(self));
   }
 
   registerArrowKeyHandlers() {
@@ -180,22 +193,26 @@ export class Game {
   }
 
   registerSwipeHandlers() {
+    const hero = this.hero;
+    const self = this;
+    const update = this.update;
+
     const handlers = {
       onDown: () => {
-        this.hero.moveDown();
-        window.requestAnimationFrame(this.update.bind(this));
+        hero.moveDown();
+        window.requestAnimationFrame(update.bind(self));
       },
       onLeft: () => {
-        this.hero.moveLeft();
-        window.requestAnimationFrame(this.update.bind(this));
+        hero.moveLeft();
+        window.requestAnimationFrame(update.bind(self));
       },
       onRight: () => {
-        this.hero.moveRight();
-        window.requestAnimationFrame(this.update.bind(this));
+        hero.moveRight();
+        window.requestAnimationFrame(update.bind(self));
       },
       onUp: () => {
-        this.hero.moveUp();
-        window.requestAnimationFrame(this.update.bind(this));
+        hero.moveUp();
+        window.requestAnimationFrame(update.bind(self));
       }
     };
 
@@ -203,18 +220,16 @@ export class Game {
     swiper.run();
   }
 
-  setHero(hero: Hero) {
-    this.hero = hero;
-  }
-
   update(timestamp: number) {
     const fps = 60;
     const progress = timestamp - this.lastUpdateTimestamp;
     const isInitialDraw = progress < 0;
+    const self = this;
+    const update = this.update;
 
     if (progress > fps || isInitialDraw) {
       this.draw();
-      window.requestAnimationFrame(this.update.bind(this));
+      window.requestAnimationFrame(update.bind(self));
       this.lastUpdateTimestamp = timestamp;
     }
   }
@@ -234,6 +249,25 @@ export class Game {
     );
 
     this.lastUpdateTimestamp = Number(new Date());
+    this.state = {
+      "user": {
+        "angle": 0,
+        "name": "Jane Doe",
+        "radius": 0,
+        "timeElapsed": (new Date()).toISOString()
+      },
+      "walls": [{
+        "gate": {
+          "start": 0,
+          "end": 1
+        },
+        "radius": 0
+      }],
+      "world": {
+        "height": World.HEIGHT,
+        "width": World.WIDTH
+      }
+    };
     this.walls = [];
   }
 }

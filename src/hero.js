@@ -1,4 +1,11 @@
 //@flow
+export interface HeroState {
+  angle: number;
+  name: string;
+  radius: number;
+  timeElapsed: string;
+}
+
 export class Hero {
   /* Properties */
   radius: number;
