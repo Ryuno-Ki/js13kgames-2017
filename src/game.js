@@ -1,6 +1,7 @@
 //@flow
 import { Helper } from './helper';
 import { Hero, HeroState } from './hero';
+import { Store } from './store';
 import { Swipe } from './swipe';
 import { Wall, WallState } from './wall';
 import { World, WorldState } from './world';
@@ -20,13 +21,11 @@ interface State {
 
 export class Game {
   /* Properties */
-  context: any; /* FIXME: type should be CanvasRenderingContext2d */
-  element: HTMLCanvasElement;
   hero: Hero;
   lastUpdateTimestamp: number;
-  paddingBetweenWalls: number;
   state: State;
   walls: Wall[];
+  world: World;
 
   static get KEYMAP(): Keymap {
     return {
@@ -39,29 +38,24 @@ export class Game {
 
   static notifyUser() {
     const now = (new Date()).toISOString();
-    const text = `Code Red at ${now}!`;
-    const element = window.document.createTextNode(text);
-    window.document.body.appendChild(element);
+    console.log('Hit wall', now);
+    window.document.body.classList.add('flash');
+    setTimeout(() => { window.document.body.classList.remove('flash'); }, 500);
   }
 
-  addWall(wall: Wall) {
-    this.walls.push(wall);
-  }
-
-  compareAngle(): boolean {
-    const hero = this.hero;
+  static compareAngle(hero: Hero, walls: Wall[]): boolean {
     const position = Helper.mapCartesianToPolar(
       Helper.coordinationSystemToCenter(hero.x, hero.y)
     );
-    const positionOfHero = position.r + hero.radius;
-    const paddingBetweenWalls = this.paddingBetweenWalls;
+    const positionOfHero = position.r + World.USERSIZE;
+    const wallDistanceWalls = World.WALLDISTANCE;
 
-    const collision = this.walls.filter((wall) => {
+    const collision = walls.filter((wall) => {
       // Only need to look at adjacent walls
-      if (positionOfHero - wall.radius > paddingBetweenWalls) {
+      if (positionOfHero - wall.radius > wallDistanceWalls) {
         return false;
       }
-      if (wall.radius - positionOfHero > paddingBetweenWalls) {
+      if (wall.radius - positionOfHero > wallDistanceWalls) {
         return false;
       }
       return true;
@@ -83,32 +77,31 @@ export class Game {
     return collision;
   }
 
-  compareRadii(): boolean {
-    const hero = this.hero;
+  static compareRadii(hero: Hero, walls: Wall[]): boolean {
     const position = Helper.mapCartesianToPolar(
       Helper.coordinationSystemToCenter(hero.x, hero.y)
     );
-    const positionOfHero = position.r + hero.radius;
-    const paddingBetweenWalls = this.paddingBetweenWalls;
+    const positionOfHero = position.r + World.USERSIZE;
+    const wallDistanceWalls = World.WALLDISTANCE;
 
-    const collision = this.walls.map((wall) => {
+    const collision = walls.map((wall) => {
       // Only need to compare radius
       return wall.radius;
     }).filter((wallRadius) => {
       // Only need to look at adjacent walls
-      if (positionOfHero - wallRadius > paddingBetweenWalls) {
+      if (positionOfHero - wallRadius > wallDistanceWalls) {
         return false;
       }
-      if (wallRadius - positionOfHero > paddingBetweenWalls) {
+      if (wallRadius - positionOfHero > wallDistanceWalls) {
         return false;
       }
       return true;
     }).map((wallRadius) => {
       // Does hero circle intersect with wall?
-      if (position.r - hero.radius > wallRadius) {
+      if (position.r - World.USERSIZE > wallRadius) {
         return false;
       }
-      if (position.r + hero.radius < wallRadius) {
+      if (position.r + World.USERSIZE < wallRadius) {
         return false;
       }
       return true;
@@ -119,28 +112,22 @@ export class Game {
     return collision;
   }
 
-  detectCollision(): boolean {
-    return this.compareAngle() && this.compareRadii();
+  static detectCollision(hero: Hero, walls: Wall[]): boolean {
+    const hitWallBecauseOfAngle = Game.compareAngle(hero, walls);
+    const hitWallBecauseOfRadius = Game.compareRadii(hero, walls);
+    return hitWallBecauseOfAngle && hitWallBecauseOfRadius;
+  }
+
+  addWall(wall: Wall) {
+    this.walls.push(wall);
   }
 
   draw() {
-    if (this.detectCollision()) { Game.notifyUser(); }
+    const hero = this.hero;
+    const walls = this.walls;
+    if (Game.detectCollision(hero, walls)) { Game.notifyUser(); }
 
-    const context = this.context;
-    const leftEdge = 0;
-    const topEdge = 0;
-    context.clearRect(leftEdge, topEdge, World.WIDTH, World.HEIGHT);
-    this.drawWalls();
-    this.hero.render(context);
-  }
-
-  drawWalls() {
-    const x = World.WIDTH / 2;
-    const y = World.HEIGHT / 2;
-
-    this.walls.forEach((wall) => {
-      wall.render(this.context, { x, y });
-    });
+    this.world.render(hero, walls);
   }
 
   init() {
@@ -148,7 +135,7 @@ export class Game {
     const update = this.update;
 
     [1, 2, 3, 4, 5, 6].forEach((level) => {
-      const wall = new Wall(level * this.paddingBetweenWalls);
+      const wall = new Wall(level * World.WALLDISTANCE);
       this.addWall(wall);
     });
 
@@ -189,7 +176,9 @@ export class Game {
   }
 
   registerArrowKeyHandlers() {
-    window.document.body.addEventListener('keydown', this.onKeyDown, false);
+    const self = this;
+    const onKeyDown = this.onKeyDown;
+    window.document.body.addEventListener('keydown', onKeyDown.bind(self), false);
   }
 
   registerSwipeHandlers() {
@@ -216,7 +205,7 @@ export class Game {
       }
     };
 
-    const swiper = new Swipe(this.element, handlers);
+    const swiper = new Swipe(this.world.element, handlers);
     swiper.run();
   }
 
@@ -229,25 +218,25 @@ export class Game {
 
     if (progress > fps || isInitialDraw) {
       this.draw();
+      this.updateTimer();
       window.requestAnimationFrame(update.bind(self));
       this.lastUpdateTimestamp = timestamp;
     }
   }
 
+  updateTimer() {
+    const start = this.startTime;
+    const now = new Date();
+    const elapsed = Math.round((now - start) / 1000, 0);
+    World.updateTimer(elapsed);
+  }
+
   constructor(canvasId: string) {
-    const canvas = World.create(canvasId);
-    this.context = canvas.getContext('2d');
-    this.element = canvas;
+    const store = new Store();
+    this.hero = new Hero(store);
+    this.world = new World(canvasId);
 
-    const fullCircleInRadians = 2 * Math.PI;
-    this.paddingBetweenWalls = 0.9 * 3 * fullCircleInRadians;
-
-    this.hero = new Hero(
-      this.paddingBetweenWalls / 2,
-      World.WIDTH / 2,
-      World.HEIGHT / 2
-    );
-
+    this.startTime = new Date();
     this.lastUpdateTimestamp = Number(new Date());
     this.state = {
       "user": {

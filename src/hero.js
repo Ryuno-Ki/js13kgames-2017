@@ -1,4 +1,8 @@
 //@flow
+import { Helper } from './helper';
+import { Action, Store } from './store';
+import { World } from './world';
+
 export interface HeroState {
   angle: number;
   name: string;
@@ -7,43 +11,88 @@ export interface HeroState {
 }
 
 export class Hero {
-  /* Properties */
-  radius: number;
-  step: number;
-  x: number;
-  y: number;
+  /* properties */
+  globalStore: Store;
 
-  moveLeft() {
-    this.x -= this.step;
+  static registerStore(globalStore: Store): Store {
+    const now = new Date();
+    const heroStore: HeroState = {
+      angle: 0,
+      name: 'Jane Doe',
+      radius: 0,
+      timeElapsed: now.toISOString()
+    };
+    globalStore.register('user', heroStore);
+    return globalStore;
   }
 
-  moveRight() {
-    this.x += this.step;
+  // FIXME: Define interface for substore
+  get store(): any {
+    return this.globalStore.get('user');
   }
 
-  moveUp() {
-    this.y -= this.step;
+  set store(action: Action) {
+    this.globalStore.dispatch(action);
+  }
+
+  get x(): number {
+    const { angle, radius } = this.store;
+    const polar = { r: radius, phi: angle };
+    const cartesian = Helper.mapPolarToCartesian(polar);
+    const translated = Helper.coordinationSystemToVertex(cartesian.x, cartesian.y);
+    return translated.p;
+  }
+
+  get y(): number {
+    const { angle, radius } = this.store;
+    const polar = { r: radius, phi: angle };
+    const cartesian = Helper.mapPolarToCartesian(polar);
+    const translated = Helper.coordinationSystemToVertex(cartesian.x, cartesian.y);
+    return translated.q;
   }
 
   moveDown() {
-    this.y += this.step;
+    const { radius } = this.store;
+    const action = {
+      key: 'user',
+      payload: { radius: radius - World.USERVELOCITY },
+      type: 'UserMoveDown'
+    };
+    this.store = action;
   }
 
-  /* FIXME: context should be of type CanvasRenderingContext2d */
-  render(context: any) {
-    const fullCircleInRadians = 2 * Math.PI;
-    const startAngle = 0;
-    const endAngle = 0.9 * fullCircleInRadians;
-
-    context.beginPath();
-    context.arc(this.x, this.y, this.radius, startAngle, endAngle);
-    context.fill();
+  moveLeft() {
+    const { angle } = this.store;
+    const action = {
+      key: 'user',
+      payload: { angle: angle - World.USERROTATION },
+      type: 'UserMoveLeft'
+    };
+    this.store = action;
   }
 
-  constructor(diameter: number, x: number, y: number) {
-    this.radius = diameter / 2;
-    this.step = 5;
-    this.x = x;
-    this.y = y;
+  moveRight() {
+    const { angle } = this.store;
+    const action = {
+      key: 'user',
+      payload: { angle: angle + World.USERROTATION },
+      type: 'UserMoveRight'
+    };
+    this.store = action;
+  }
+
+  moveUp() {
+    const { radius } = this.store;
+    const action = {
+      key: 'user',
+      payload: { radius: radius + World.USERVELOCITY },
+      type: 'UserMoveUp'
+    };
+    this.store = action;
+  }
+
+  constructor(store: Store) {
+    const globalStore = Hero.registerStore(store);
+    this.globalStore = globalStore;
   }
 }

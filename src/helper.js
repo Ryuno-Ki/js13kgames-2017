@@ -6,6 +6,11 @@ export interface CartesianSystem {
   y: number;
 }
 
+export interface CoordinationSystem {
+  p: number;
+  q: number;
+}
+
 interface PolarSystem {
   phi: number;
   r: number;
@@ -18,6 +23,18 @@ export class Helper {
     const x = p - World.WIDTH / 2;
     const y = q - World.HEIGHT / 2;
     return { x, y };
+  }
+
+  static coordinationSystemToVertex(x: number, y: number): CoordinationSystem {
+    // (p, q) are measured from top-left corner
+    // (x, y) are center of circles
+    const p = x + World.WIDTH / 2;
+    const q = y + World.HEIGHT / 2;
+    return { p, q };
+  }
+
+  static euclideanDistance(x: number, y: number): number {
+    return Math.sqrt(x * x + y * y);
   }
 
   static mapCartesianToPolar(cartesian: CartesianSystem): PolarSystem {
@@ -36,11 +53,6 @@ export class Helper {
 
   static normaliseAngle(angle: number): number {
     const fullCircleInRadians = 2 * Math.PI;
-    /*
-    if (angle < 0) {
-      return (angle + fullCircleInRadians) % fullCircleInRadians
-    }
-    */
     return angle % fullCircleInRadians;
   }
 }

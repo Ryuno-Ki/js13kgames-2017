@@ -29,16 +29,6 @@ export class Wall {
     };
   }
 
-  /* FIXME: context should be of type CanvasRenderingContext2d */
-  render(context: any, cartesian: CartesianSystem) {
-    const { x, y } = cartesian;
-    // Since the gate shall be spared out from circle, switch its start
-    // and end when drawing the arc
-    context.beginPath();
-    context.arc(x, y, this.radius, this.endGate, this.startGate);
-    context.stroke();
-  }
-
   constructor(radius: number) {
     const { start, end } = Wall.randomiseGate();
 
