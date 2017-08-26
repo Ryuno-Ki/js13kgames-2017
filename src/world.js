@@ -11,7 +11,7 @@ export interface IWorldState {
 export class World {
   /* properties */
   element: HTMLCanvasElement;
-  context: any; // FIXME: should be CanvasRenderingContext2d
+  context: CanvasRenderingContext2D;
 
   static create(id: string): HTMLCanvasElement {
     const element = document.createElement('canvas');
