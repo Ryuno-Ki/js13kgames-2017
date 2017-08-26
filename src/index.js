@@ -1,4 +1,5 @@
-import { Game } from './game.js';
+//@flow
+import { Game } from './game';
 
-const game = new Game('game');
+const game: Game = new Game('game');
 game.init();

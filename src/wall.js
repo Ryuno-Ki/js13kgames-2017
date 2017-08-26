@@ -1,7 +1,18 @@
-import { Helper } from './helper';
+//@flow
+import { CartesianSystem, Helper } from './helper';
+
+interface Gate {
+  end: number;
+  start: number;
+}
 
 export class Wall {
-  randomiseGate() {
+  /* properties */
+  endGate: number;
+  radius: number;
+  startGate: number;
+
+  randomiseGate(): Gate {
     const fullCircleInRadians = 2 * Math.PI;
     const gate = Math.random() * fullCircleInRadians;
     const startAngle = 0 + gate;
@@ -13,7 +24,9 @@ export class Wall {
     };
   }
 
-  render(context, x, y) {
+  /* FIXME: context should be of type CanvasRenderingContext2d */
+  render(context: any, cartesian: CartesianSystem) {
+    const { x, y } = cartesian;
     // Since the gate shall be spared out from circle, switch its start
     // and end when drawing the arc
     context.beginPath();
@@ -21,7 +34,7 @@ export class Wall {
     context.stroke();
   }
 
-  constructor(radius) {
+  constructor(radius: number) {
     const { start, end } = this.randomiseGate();
 
     this.radius = radius;

@@ -1,4 +1,11 @@
+//@flow
 export class Hero {
+  /* Properties */
+  radius: number;
+  step: number;
+  x: number;
+  y: number;
+
   moveLeft() {
     this.x -= this.step;
   }
@@ -15,7 +22,8 @@ export class Hero {
     this.y += this.step;
   }
 
-  render(context) {
+  /* FIXME: context should be of type CanvasRenderingContext2d */
+  render(context: any) {
     const fullCircleInRadians = 2 * Math.PI;
     const startAngle = 0;
     const endAngle = 0.9 * fullCircleInRadians;
@@ -25,7 +33,7 @@ export class Hero {
     context.fill();
   }
 
-  constructor(diameter, x, y) {
+  constructor(diameter: number, x: number, y: number) {
     this.radius = diameter / 2;
     this.step = 5;
     this.x = x;
