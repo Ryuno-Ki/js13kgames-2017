@@ -14,7 +14,7 @@ export class World {
   context: CanvasRenderingContext2D;
 
   static create(id: string): HTMLCanvasElement {
-    const element = document.createElement('canvas');
+    const element = window.document.createElement('canvas');
     element.setAttribute('id', id);
     element.setAttribute('height', `${World.HEIGHT}px`);
     element.setAttribute('width', `${World.WIDTH}px`);

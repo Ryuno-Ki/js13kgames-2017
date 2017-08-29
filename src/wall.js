@@ -34,7 +34,10 @@ export class Wall {
   }
 
   constructor(radius: number) {
-    const { start, end } = Wall.randomiseGate();
+    // Destructuring assignment does not work in Node/mocha
+    const randomisedGate = Wall.randomiseGate();
+    const end = randomisedGate.end;
+    const start = randomisedGate.start;
 
     this.radius = radius;
     this.startGate = start;

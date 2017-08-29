@@ -11,7 +11,9 @@ export class Store {
   store: any;  // FIXME should be generic object
 
   dispatch(action: IAction) {
-    const { payload, type } = action;
+    // Destructuring assignment does not work in Node/mocha
+    const payload = action.payload;
+    const type = action.type;
     this.update(action);
 
     if (type in this.actions) {
@@ -39,7 +41,9 @@ export class Store {
   }
 
   update(action: IAction) {
-    const { key, payload } = action;
+    // Destructuring assignment does not work in Node/mocha
+    const key = action.key;
+    const payload = action.payload;
     const substore = this.store[key];
     this.store[key] = Object.assign(substore, payload);
   }

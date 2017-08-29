@@ -22,6 +22,10 @@ interface State {
   world: IWorldState;
 }
 
+// Polyfill for mocha
+const noop = () => { return null; };
+window.requestAnimationFrame = window.requestAnimationFrame || noop;
+
 export class Game {
   /* Properties */
   hero: Hero;

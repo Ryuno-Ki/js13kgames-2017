@@ -36,7 +36,9 @@ export class Hero {
   }
 
   get x(): number {
-    const { angle, radius } = this.store;
+    // Destructuring assignment does not work in Node/mocha
+    const angle = this.store.angle;
+    const radius = this.store.radius;
     const polar = { r: radius, phi: angle };
     const cartesian = Helper.mapPolarToCartesian(polar);
     const translated = Helper.coordinationSystemToVertex(cartesian.x, cartesian.y);
@@ -44,7 +46,9 @@ export class Hero {
   }
 
   get y(): number {
-    const { angle, radius } = this.store;
+    // Destructuring assignment does not work in Node/mocha
+    const angle = this.store.angle;
+    const radius = this.store.radius;
     const polar = { r: radius, phi: angle };
     const cartesian = Helper.mapPolarToCartesian(polar);
     const translated = Helper.coordinationSystemToVertex(cartesian.x, cartesian.y);
@@ -52,7 +56,8 @@ export class Hero {
   }
 
   moveDown() {
-    const { radius } = this.store;
+    // Destructuring assignment does not work in Node/mocha
+    const radius = this.store.radius;
     const action = {
       key: 'user',
       payload: { radius: radius - World.USERVELOCITY },
@@ -62,7 +67,8 @@ export class Hero {
   }
 
   moveLeft() {
-    const { angle } = this.store;
+    // Destructuring assignment does not work in Node/mocha
+    const angle = this.store.angle;
     const action = {
       key: 'user',
       payload: { angle: angle - World.USERROTATION },
@@ -72,7 +78,8 @@ export class Hero {
   }
 
   moveRight() {
-    const { angle } = this.store;
+    // Destructuring assignment does not work in Node/mocha
+    const angle = this.store.angle;
     const action = {
       key: 'user',
       payload: { angle: angle + World.USERROTATION },
@@ -82,7 +89,8 @@ export class Hero {
   }
 
   moveUp() {
-    const { radius } = this.store;
+    // Destructuring assignment does not work in Node/mocha
+    const radius = this.store.radius;
     const action = {
       key: 'user',
       payload: { radius: radius + World.USERVELOCITY },

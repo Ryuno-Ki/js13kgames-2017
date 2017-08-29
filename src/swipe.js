@@ -72,7 +72,11 @@ export class Swipe {
 
     this.element.addEventListener('touchstart', this.onTouchStart.bind(this), false);
 
-    const {onDown, onLeft, onRight, onUp} = callbacks;
-    this.handlers = {onDown, onLeft, onRight, onUp};
+    // Destructuring assignment does not work in Node/mocha
+    const onDown = callbacks.onDown;
+    const onLeft = callbacks.onLeft;
+    const onRight = callbacks.onRight;
+    const onUp = callbacks.onUp;
+    this.handlers = { onDown, onLeft, onRight, onUp };
   }
 }
