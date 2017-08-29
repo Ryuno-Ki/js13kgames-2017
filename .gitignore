@@ -87,3 +87,7 @@ stats.html
 
 # Teaching Node.js ES6 import/export
 .esm-cache
+
+# Test files
+test/*.js
+!test/*.spec.js

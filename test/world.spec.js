@@ -1,10 +1,8 @@
 'use strict';
 const expect = require('chai').expect;
-const World = require('./index');
+const World = require('./world').World;
 
-console.log('Testing world', World);
 describe('World', () => {
-  let doc;
 
   before(() => {
     require('jsdom-global')();

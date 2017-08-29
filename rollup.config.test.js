@@ -8,11 +8,23 @@ const plugins = [
   flow(flowOptions),
 ];
 
-export default {
-  input: join(__dirname, 'src', 'index.js'),
-  output: {
-    file: join(__dirname, 'test', 'index.js'),
-    format: 'cjs'
-  },
-  plugins: plugins
-};
+export default [
+  'game.js',
+  'helper.js',
+  'hero.js',
+  'index.js',
+  'store.js',
+  'swipe.js',
+  'wall.js',
+  'world.js'
+].map((fileName) => {
+  return {
+    input: join(__dirname, 'src', fileName),
+    output: {
+      file: join(__dirname, 'test', fileName),
+      format: 'cjs',
+      name: 'App'
+    },
+    plugins: plugins
+  };
+});
