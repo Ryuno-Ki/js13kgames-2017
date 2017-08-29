@@ -14,13 +14,14 @@
     "prebuild:prod": "npm run rollup:prod",
     "prestart:dev": "npm run prebuild:dev",
     "prestart:prod": "npm run prebuild:prod",
-    "pretest": "node test/before-test-run.js",
+    "pretest": "npm run rollup:test",
     "rollup:dev": "rollup -c",
     "rollup:prod": "NODE_ENV='production' rollup -c",
+    "rollup:test": "NODE_ENV='test' rollup -c",
     "start": "nodemon ./server.js",
     "start:dev": "npm run start",
     "start:prod": "npm run start",
-    "test": "node test/test-runner.js"
+    "test": "mocha -b --ui bdd -r chai/register-expect -r jsdom-global/register test/*.spec.js"
   },
   "keywords": [
     "js13kgames",
@@ -38,6 +39,8 @@
     "chai": "^4.1.1",
     "flow-bin": "^0.53.1",
     "flow-remove-types": "^1.2.1",
+    "jsdom": "^9.12.0",
+    "jsdom-global": "^3.0.2",
     "mocha": "^3.5.0",
     "nodemon": "^1.11.0",
     "pug": "^2.0.0-rc.3",
