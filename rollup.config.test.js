@@ -4,15 +4,15 @@ import flow from 'rollup-plugin-flow';
 
 const flowOptions = { all: true, pretty: true };
 
-const testPlugins = [
+const plugins = [
   flow(flowOptions),
 ];
 
 export default {
-  input: join(__dirname, 'test', 'test-runner.js'),
+  input: join(__dirname, 'src', 'index.js'),
   output: {
     file: join(__dirname, 'test', 'index.js'),
-    format: 'iife'
+    format: 'cjs'
   },
-  plugins: testPlugins
+  plugins: plugins
 };
