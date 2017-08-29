@@ -14,12 +14,13 @@
     "prebuild:prod": "npm run rollup:prod",
     "prestart:dev": "npm run prebuild:dev",
     "prestart:prod": "npm run prebuild:prod",
+    "pretest": "node test/before-test-run.js",
     "rollup:dev": "rollup -c",
     "rollup:prod": "NODE_ENV='production' rollup -c",
     "start": "nodemon ./server.js",
     "start:dev": "npm run start",
     "start:prod": "npm run start",
-    "test": "mocha -b --ui bdd -r chai/register-expect src/*.spec.js"
+    "test": "node test/test-runner.js"
   },
   "keywords": [
     "js13kgames",
@@ -33,8 +34,10 @@
     "url": "https://github.com/Ryuno-Ki/js13kgames-2017.git"
   },
   "devDependencies": {
+    "@std/esm": "^0.7.0",
     "chai": "^4.1.1",
     "flow-bin": "^0.53.1",
+    "flow-remove-types": "^1.2.1",
     "mocha": "^3.5.0",
     "nodemon": "^1.11.0",
     "pug": "^2.0.0-rc.3",
@@ -46,5 +49,9 @@
     "rollup-plugin-uglify": "^2.0.1",
     "rollup-plugin-visualizer": "^0.3.1",
     "uglify-es": "^3.0.28"
+  },
+  "@std/esm": {
+    "esm": "js",
+    "cjs": true
   }
 }

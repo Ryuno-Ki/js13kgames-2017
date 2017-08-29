@@ -1,19 +1,19 @@
-//@flow
+//     
 import { Helper } from './helper';
-import type { Hero } from './hero';
-import type { Wall } from './wall';
+                                   
+                                   
 
-export interface IWorldState {
-  height: number;
-  width: number;
-}
+                              
+                 
+                
+ 
 
 export class World {
   /* properties */
-  element: HTMLCanvasElement;
-  context: CanvasRenderingContext2D;
+                             
+                                    
 
-  static create(id: string): HTMLCanvasElement {
+  static create(id        )                    {
     const element = document.createElement('canvas');
     element.setAttribute('id', id);
     element.setAttribute('height', `${World.HEIGHT}px`);
@@ -22,33 +22,33 @@ export class World {
     return element;
   }
 
-  static get GATESIZE(): number {
+  static get GATESIZE()         {
     return 0.15;
   }
 
-  static get HEIGHT(): number {
+  static get HEIGHT()         {
     return Math.min(window.innerHeight, window.innerWidth);
   }
 
-  static get USERSIZE(): number {
+  static get USERSIZE()         {
     return World.WALLDISTANCE / 3;
   }
 
-  static get USERROTATION(): number {
+  static get USERROTATION()         {
     return Helper.mapDegreeToRadians(5);
     // return 0.02 * Helper.euclideanDistance(World.HEIGHT, World.WIDTH);
   }
 
-  static get USERVELOCITY(): number {
+  static get USERVELOCITY()         {
     return 3;
     // return 0.05 * Helper.euclideanDistance(World.HEIGHT, World.WIDTH);
   }
 
-  static get WALLDISTANCE(): number {
+  static get WALLDISTANCE()         {
     return 0.06 * (World.HEIGHT + World.WIDTH) / 2;
   }
 
-  static get WIDTH(): number {
+  static get WIDTH()         {
     return Math.min(window.innerHeight, window.innerWidth);
   }
 
@@ -57,7 +57,7 @@ export class World {
     elapsedContainer.innerText = elapsedTime;
   }
 
-  render(hero: Hero, walls: Wall[]) {
+  render(hero      , walls        ) {
     const context = this.context;
     const leftEdge = 0;
     const topEdge = 0;
@@ -66,7 +66,7 @@ export class World {
     this.renderHero(hero);
   }
 
-  renderHero(hero: Hero) {
+  renderHero(hero      ) {
     const fullCircleInRadians = 2 * Math.PI;
     const startAngle = 0;
     const endAngle = 0.9 * fullCircleInRadians;
@@ -85,7 +85,7 @@ export class World {
     context.fill();
   }
 
-  renderWall(wall: Wall) {
+  renderWall(wall      ) {
     const x = World.WIDTH / 2;
     const y = World.HEIGHT / 2;
     const context = this.context;
@@ -105,7 +105,7 @@ export class World {
     context.stroke();
   }
 
-  constructor(id: string) {
+  constructor(id        ) {
     this.element = World.create(id);
     this.context = this.element.getContext('2d');
   }

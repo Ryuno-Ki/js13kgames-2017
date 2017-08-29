@@ -80,4 +80,10 @@ Session.vim
 tags
 
 # End of https://www.gitignore.io/api/vim,git,node
+
+
+# Output of visualisation plugin of rollup
 stats.html
+
+# Teaching Node.js ES6 import/export
+.esm-cache

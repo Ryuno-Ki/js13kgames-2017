@@ -1,23 +1,23 @@
-//@flow
+//     
 import { World } from './world';
 
-export interface ICartesianSystem {
-  x: number;
-  y: number;
-}
+                                   
+            
+            
+ 
 
-export interface ICoordinationSystem {
-  p: number;
-  q: number;
-}
+                                      
+            
+            
+ 
 
-interface PolarSystem {
-  phi: number;
-  r: number;
-}
+                       
+              
+            
+ 
 
 export class Helper {
-  static coordinationSystemToCenter(p: number, q: number): ICartesianSystem {
+  static coordinationSystemToCenter(p        , q        )                   {
     // (p, q) are measured from top-left corner
     // (x, y) are center of circles
     const x = p - World.WIDTH / 2;
@@ -25,7 +25,7 @@ export class Helper {
     return { x, y };
   }
 
-  static coordinationSystemToVertex(x: number, y: number): ICoordinationSystem {
+  static coordinationSystemToVertex(x        , y        )                      {
     // (p, q) are measured from top-left corner
     // (x, y) are center of circles
     const p = x + World.WIDTH / 2;
@@ -33,11 +33,11 @@ export class Helper {
     return { p, q };
   }
 
-  static euclideanDistance(x: number, y: number): number {
+  static euclideanDistance(x        , y        )         {
     return Math.sqrt(x * x + y * y);
   }
 
-  static mapCartesianToPolar(cartesian: ICartesianSystem): PolarSystem {
+  static mapCartesianToPolar(cartesian                  )              {
     // Destructuring assignment does not work in Node/mocha
     const x = cartesian.x;
     const y = cartesian.y;
@@ -46,12 +46,12 @@ export class Helper {
     return { r, phi };
   }
 
-  static mapDegreeToRadians(degree: number) {
+  static mapDegreeToRadians(degree        ) {
     // degree : 360 = radians : 2 * Math.PI
     return degree * Math.PI / 180;
   }
 
-  static mapPolarToCartesian(polar: PolarSystem): ICartesianSystem {
+  static mapPolarToCartesian(polar             )                   {
     // Destructuring assignment does not work in Node/mocha
     const phi = polar.phi;
     const r = polar.r;
@@ -60,12 +60,12 @@ export class Helper {
     return { x, y };
   }
 
-  static mapRadiansToDegree(radians: number) {
+  static mapRadiansToDegree(radians        ) {
     // degree : 360 = radians : 2 * Math.PI
     return radians * 180 / Math.PI;
   }
 
-  static normaliseAngle(angle: number): number {
+  static normaliseAngle(angle        )         {
     const fullCircleInRadians = 2 * Math.PI;
     if (angle < 0) {
       return (angle + fullCircleInRadians) % fullCircleInRadians;
