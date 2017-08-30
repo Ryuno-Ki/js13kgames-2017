@@ -14,15 +14,59 @@ export class World {
   context: CanvasRenderingContext2D;
 
   static create(id: string): HTMLCanvasElement {
+    const canvas = World.createCanvas(id);
+    window.document.body.appendChild(canvas);
+
+    const container = World.createContainer();
+    const level = World.createLevel();
+    const label = World.createAngleInput();
+    container.appendChild(level);
+    container.appendChild(label);
+    window.document.body.appendChild(container);
+    return canvas;
+  }
+
+  static createAngleInput(): HTMLElement {
+    const label = window.document.createElement('label');
+    const labelText = window.document.createTextNode('Angle in degree');
+    const input = window.document.createElement('input');
+    input.setAttribute('id', 'angle');
+    input.setAttribute('min', '1');
+    input.setAttribute('type', 'number');
+    input.setAttribute('value', '5');
+    label.appendChild(labelText);
+    label.appendChild(input);
+    return label;
+  }
+
+  static createCanvas(id: string): HTMLCanvasElement {
     const element = window.document.createElement('canvas');
     element.setAttribute('id', id);
     element.setAttribute('height', `${World.HEIGHT}px`);
     element.setAttribute('width', `${World.WIDTH}px`);
-    window.document.body.appendChild(element);
     return element;
   }
 
+  static createContainer(): HTMLElement {
+    const container = window.document.createElement('div');
+    return container;
+  }
+
+  static createLevel(): HTMLElement {
+    const label = window.document.createElement('label');
+    const labelText = window.document.createTextNode('Level');
+    const input = window.document.createElement('input');
+    input.setAttribute('id', 'level');
+    input.setAttribute('min', '1');
+    input.setAttribute('type', 'number');
+    input.setAttribute('value', '5');
+    label.appendChild(labelText);
+    label.appendChild(input);
+    return label;
+  }
+
   static get GATESIZE(): number {
+    //return 1.05 * World.USERSIZE;
     return 0.15;
   }
 
@@ -35,7 +79,9 @@ export class World {
   }
 
   static get USERROTATION(): number {
-    return Helper.mapDegreeToRadians(5);
+    const input = window.document.getElementById('angle');
+    const degree = parseInt(input.value, 10);
+    return Helper.mapDegreeToRadians(degree);
     // return 0.02 * Helper.euclideanDistance(World.HEIGHT, World.WIDTH);
   }
 
@@ -45,7 +91,13 @@ export class World {
   }
 
   static get WALLDISTANCE(): number {
-    return 0.06 * (World.HEIGHT + World.WIDTH) / 2;
+    /*
+    const input = window.document.getElementById('level');
+    const level = parseInt(input.value, 10);
+    const scaling = 0.5 / (level + 1);
+    return scaling * (World.HEIGHT + World.WIDTH) / 2;
+    */
+   return 0.06 * (World.HEIGHT + World.WIDTH) / 2;
   }
 
   static get WIDTH(): number {
