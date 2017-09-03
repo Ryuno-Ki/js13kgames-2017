@@ -21,7 +21,7 @@
     "start": "nodemon ./server.js",
     "start:dev": "npm run start",
     "start:prod": "npm run start",
-    "test": "mocha -b --ui bdd -r chai/register-expect -r jsdom-global/register test/*.spec.js"
+    "test": "nyc mocha -b --ui bdd -r chai/register-expect -r jsdom-global/register test/*.spec.js"
   },
   "keywords": [
     "js13kgames",
@@ -46,6 +46,7 @@
     "jsdom-global": "^3.0.2",
     "mocha": "^3.5.0",
     "nodemon": "^1.11.0",
+    "nyc": "^11.1.0",
     "pug": "^2.0.0-rc.3",
     "pug-cli": "^1.0.0-alpha6",
     "rollup": "^0.48.2",
