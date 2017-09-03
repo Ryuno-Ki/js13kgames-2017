@@ -80,9 +80,13 @@ export class World {
 
   static get USERROTATION(): number {
     const input = window.document.getElementById('angle');
+    if (input === null) {
+      //eslint-disable-next-line no-console
+      console.log('Fallback USERROTATION');
+      return 0.02 * Helper.euclideanDistance(World.HEIGHT, World.WIDTH);
+    }
     const degree = parseInt(input.value, 10);
     return Helper.mapDegreeToRadians(degree);
-    // return 0.02 * Helper.euclideanDistance(World.HEIGHT, World.WIDTH);
   }
 
   static get USERVELOCITY(): number {
