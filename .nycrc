@@ -1,6 +1,6 @@
 {
-  "exclude": ["test/*.spec.js"],
-  "include": ["test/*.js"],
+  "exclude": ["test/*.js"],
+  "include": ["src/*.js"],
   "all": true,
   "reporter": ["lcov", "text-summary"],
   "report-dir": "./coverage"
