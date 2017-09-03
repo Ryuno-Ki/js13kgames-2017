@@ -8,7 +8,7 @@ import NYC from 'nyc';
 const nyc = new NYC();
 const istanbulNext = new nyc._instrumenterLib.istanbul();
 
-const flowOptions = { all: true, pretty: true };
+const flowOptions = { all: true, pretty: false };
 const istanbulOptions = {
   exclude: ['test/*.js'],
   instrumenter: {

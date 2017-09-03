@@ -1,6 +1,5 @@
 'use strict';
-const chai = require('chai');
-const expect = chai.expect;
+const expect = require('chai').expect;
 const Wall = require('./wall').Wall;
 
 describe('Wall', () => {
