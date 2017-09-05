@@ -1,13 +1,59 @@
 'use strict';
 const chai = require('chai');
 const expect = chai.expect;
+const chaiInterface = require('chai-interface');
 const spies = require('chai-spies');
 
+chai.use(chaiInterface);
 chai.use(spies);
 
 const Store = require('./store').Store;
 
 describe('Store', () => {
+  xit('can create a new store', () => {
+    const newStore = Store.createStore(reducer);
+  });
+
+  xit('can hydrate a new store while creating', () => {
+    const newStore = Store.createStore(reducer, storedState);
+  });
+
+  xit('can combine reducers', () => {
+    const combinedReducers = Store.combineReducers({
+      reducer1,
+      reducer2
+    });
+
+    /*
+     * nextState1 = reducer1(state[reducer1], action);
+     * nextState2 = reducer2(state[reducer2], action);
+     * return {
+     *   reducer1: nextState1,
+     *   reducer2: nextState2
+     * };
+     */
+  });
+
+  xit('can dispatch reducers', () => {
+    store.dispatch(action({foo: 'bar'}));
+  });
+
+  xit('offers a way to subscribe for changes', () => {
+    const unsubscribe = store.subscribe(callback);
+  });
+
+  xit('gets the state', () => {
+    const state = store.getState();
+  });
+
+  /*
+   * Data flow:
+   * 1. store.dispatch(action)
+   * 2. store calls reducers
+   * 3. root reducer combines substores into single store tree
+   * 4. store saves store tree returned by root reducer
+   */
+
   let store;
 
   beforeEach(() => {
