@@ -42,7 +42,7 @@ describe('World', () => {
   });
 
   describe('DOM methods', () => {
-    afterEach(() => {
+    beforeEach(() => {
       const children = Array.from(window.document.body.children);
       children.forEach((child) => {
         window.document.body.removeChild(child);

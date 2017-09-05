@@ -1,10 +1,10 @@
 //@flow
 import { Helper } from './helper';
-import { Hero } from './hero';
+// import { Hero } from './hero';
 import type { IHeroState } from './hero';
 import { Store } from './store';
 import { Swipe } from './swipe';
-import { Wall } from './wall';
+// import { Wall } from './wall';
 import type { IWallState } from './wall';
 import { World } from './world';
 import type { IWorldState } from './world';
@@ -28,11 +28,11 @@ window.requestAnimationFrame = window.requestAnimationFrame || noop;
 
 export class Game {
   /* Properties */
-  hero: Hero;
+//   hero: Hero;
   lastUpdateTimestamp: number;
   startTime: Date;
   state: State;
-  walls: Wall[];
+//  walls: Wall[];
   world: World;
 
   static get KEYMAP(): Keymap {
@@ -52,6 +52,7 @@ export class Game {
     setTimeout(() => { window.document.body.classList.remove('flash'); }, 500);
   }
 
+  /*
   static compareAngle(hero: Hero, walls: Wall[]): boolean {
     const position = Helper.mapCartesianToPolar(
       Helper.coordinationSystemToCenter(hero.x, hero.y)
@@ -85,7 +86,9 @@ export class Game {
     });
     return collision;
   }
+  */
 
+  /*
   static compareRadii(hero: Hero, walls: Wall[]): boolean {
     const position = Helper.mapCartesianToPolar(
       Helper.coordinationSystemToCenter(hero.x, hero.y)
@@ -120,16 +123,21 @@ export class Game {
     });
     return collision;
   }
+  */
 
+  /*
   static detectCollision(hero: Hero, walls: Wall[]): boolean {
     const hitWallBecauseOfAngle = Game.compareAngle(hero, walls);
     const hitWallBecauseOfRadius = Game.compareRadii(hero, walls);
     return hitWallBecauseOfAngle && hitWallBecauseOfRadius;
   }
+  */
 
+  /*
   addWall(wall: Wall) {
     this.walls.push(wall);
   }
+  */
 
   draw() {
     const hero = this.hero;
@@ -139,6 +147,7 @@ export class Game {
     this.world.render(hero, walls);
   }
 
+  /*
   init() {
     const self = this;
     const update = this.update;
@@ -152,6 +161,7 @@ export class Game {
     this.registerSwipeHandlers();
     window.requestAnimationFrame(update.bind(self));
   }
+  */
 
   onKeyDown(event: KeyboardEvent) {
     const hero = this.hero;
@@ -242,7 +252,7 @@ export class Game {
 
   constructor(canvasId: string) {
     const store = new Store();
-    this.hero = new Hero(store);
+    // this.hero = new Hero(store);
     this.world = new World(canvasId);
 
     this.startTime = new Date();

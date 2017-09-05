@@ -1,106 +1,66 @@
 //@flow
-import { Helper } from './helper';
-import type { IAction, Store } from './store';
-import { World } from './world';
+import type { IAction } from './store';
 
 export interface IHeroState {
   angle: number;
-  name: string;
   radius: number;
-  timeElapsed: string;
 }
 
-export class Hero {
-  /* properties */
-  globalStore: Store;
+export class Types {
+  static get moveDown() {  return 'HERO_MOVES_DOWN'; }
+  static get moveLeft() {  return 'HERO_MOVES_LEFT'; }
+  static get moveRight() { return 'HERO_MOVES_RIGHT'; }
+  static get moveUp() {    return 'HERO_MOVES_UP'; }
+}
 
-  static registerStore(globalStore: Store): Store {
-    const now = new Date();
-    const heroStore: IHeroState = {
-      angle: 0,
-      name: 'Jane Doe',
-      radius: 0,
-      timeElapsed: now.toISOString()
+export class Actions {
+  static moveDown(distance: number): IAction {
+    return {
+      type: Types.moveDown,
+      payload: { radius: -distance }
     };
-    globalStore.register('user', heroStore);
-    return globalStore;
   }
 
-  // FIXME: Define interface for substore
-  get store(): any {
-    return this.globalStore.get('user');
-  }
-
-  set store(action: IAction) {
-    this.globalStore.dispatch(action);
-  }
-
-  get x(): number {
-    // Destructuring assignment does not work in Node/mocha
-    const angle = this.store.angle;
-    const radius = this.store.radius;
-    const polar = { r: radius, phi: angle };
-    const cartesian = Helper.mapPolarToCartesian(polar);
-    const translated = Helper.coordinationSystemToVertex(cartesian.x, cartesian.y);
-    return translated.p;
-  }
-
-  get y(): number {
-    // Destructuring assignment does not work in Node/mocha
-    const angle = this.store.angle;
-    const radius = this.store.radius;
-    const polar = { r: radius, phi: angle };
-    const cartesian = Helper.mapPolarToCartesian(polar);
-    const translated = Helper.coordinationSystemToVertex(cartesian.x, cartesian.y);
-    return translated.q;
-  }
-
-  moveDown() {
-    // Destructuring assignment does not work in Node/mocha
-    const radius = this.store.radius;
-    const action = {
-      key: 'user',
-      payload: { radius: radius - World.USERVELOCITY },
-      type: 'UserMoveDown'
+  static moveLeft(distance: number): IAction {
+    return {
+      type: Types.moveLeft,
+      payload: { angle: -distance }
     };
-    this.store = action;
   }
 
-  moveLeft() {
-    // Destructuring assignment does not work in Node/mocha
-    const angle = this.store.angle;
-    const action = {
-      key: 'user',
-      payload: { angle: angle - World.USERROTATION },
-      type: 'UserMoveLeft'
+  static moveRight(distance: number): IAction {
+    return {
+      type: Types.moveRight,
+      payload: { angle: distance }
     };
-    this.store = action;
   }
 
-  moveRight() {
-    // Destructuring assignment does not work in Node/mocha
-    const angle = this.store.angle;
-    const action = {
-      key: 'user',
-      payload: { angle: angle + World.USERROTATION },
-      type: 'UserMoveRight'
+  static moveUp(distance: number): IAction {
+    return {
+      type: Types.moveUp,
+      payload: { radius: distance }
     };
-    this.store = action;
-  }
-
-  moveUp() {
-    // Destructuring assignment does not work in Node/mocha
-    const radius = this.store.radius;
-    const action = {
-      key: 'user',
-      payload: { radius: radius + World.USERVELOCITY },
-      type: 'UserMoveUp'
-    };
-    this.store = action;
-  }
-
-  constructor(store: Store) {
-    const globalStore = Hero.registerStore(store);
-    this.globalStore = globalStore;
   }
 }
+
+export const initialState: IHeroState = {
+  angle: 0,
+  radius: 0,
+};
+
+export function reduce(state, action: IAction) {
+  if (state === undefined) {
+    return initialState;
+  }
+
+  switch (action.type) {
+    case Types.moveDown:
+    case Types.moveLeft:
+    case Types.moveRight:
+    case Types.moveUp:
+      return Object.assign({}, state, action.payload);
+
+    default:
+      return state;
+  }
+};

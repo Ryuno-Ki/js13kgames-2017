@@ -13,34 +13,58 @@ export interface IWallState {
   gate: IGate;
 }
 
-export class Wall {
-  /* properties */
-  endGate: number;
-  radius: number;
-  startGate: number;
+export class Types {
+  static get randomiseGate() { return 'WALL_RANDOMISE_GATE'; }
+  static get setRadius() { return 'WALL_SET_RADIUS'; }
+}
 
-  static randomiseGate(): IGate {
-    const fullCircleInRadians = 2 * Math.PI;
-    const gate = Math.random() * fullCircleInRadians;
-    const startAngle = 0 + gate;
-    const endAngle = Helper.normaliseAngle(
-      startAngle + World.GATESIZE * fullCircleInRadians
-    );
+export class Actions {
+  static _getRandomStart(): number {
+    return 2 * Math.PI * Math.random()
+  }
+
+  static _getRandomEnd(start: number, width: number): number {
+    return Helper.normaliseAngle(start + width);
+  }
+
+  static randomiseGate(width: number): IAction {
+    const randomStart = Actions._getRandomStart();
+    const randomEnd = Actions._getRandomEnd(randomStart, width);
+    // console.log(`${randomEnd} - ${randomStart} == ${width}?`);
 
     return {
-      end: endAngle,
-      start: startAngle,
+      type: Types.randomiseGate,
+      payload: { gate: { start: randomStart, end: randomEnd } }
     };
   }
 
-  constructor(radius: number) {
-    // Destructuring assignment does not work in Node/mocha
-    const randomisedGate = Wall.randomiseGate();
-    const end = randomisedGate.end;
-    const start = randomisedGate.start;
+  static setRadius(radius: number): IAction {
+    return {
+      type: Types.setRadius,
+      payload: { radius: radius },
+    };
+  }
+}
 
-    this.radius = radius;
-    this.startGate = start;
-    this.endGate = end;
+export const initialState: IWallState = {
+  radius: 1,
+  gate: {
+    end: 1,
+    start: 0,
+  }
+}
+
+export function reduce(state, action: IAction) {
+  if (state === undefined) {
+    return initialState;
+  }
+
+  switch (action.type) {
+    case Types.randomiseGate:
+    case Types.setRadius:
+      return Object.assign({}, state, action.payload);
+
+    default:
+      return state;
   }
 }
