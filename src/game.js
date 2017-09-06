@@ -1,10 +1,13 @@
 //@flow
-import { Helper } from './helper';
+// import { Helper } from './helper';
 // import { Hero } from './hero';
+import { reduce as HeroReducer } from './hero';
+import { Actions as HeroActions } from './hero';
 import type { IHeroState } from './hero';
 import { Store } from './store';
 import { Swipe } from './swipe';
 // import { Wall } from './wall';
+import { reduce as WallReducer } from './wall';
 import type { IWallState } from './wall';
 import { World } from './world';
 import type { IWorldState } from './world';
@@ -132,6 +135,9 @@ export class Game {
     return hitWallBecauseOfAngle && hitWallBecauseOfRadius;
   }
   */
+  static detectCollision(): boolean {
+    return false;
+  }
 
   /*
   addWall(wall: Wall) {
@@ -147,21 +153,21 @@ export class Game {
     this.world.render(hero, walls);
   }
 
-  /*
   init() {
     const self = this;
     const update = this.update;
 
+    /*
     [1, 2, 3, 4, 5, 6].forEach((level) => {
       const wall = new Wall(level * World.WALLDISTANCE);
       this.addWall(wall);
     });
+    */
 
     this.registerArrowKeyHandlers();
     this.registerSwipeHandlers();
     window.requestAnimationFrame(update.bind(self));
   }
-  */
 
   onKeyDown(event: KeyboardEvent) {
     const hero = this.hero;
@@ -251,7 +257,11 @@ export class Game {
   }
 
   constructor(canvasId: string) {
-    const store = new Store();
+    const reducers = { user: HeroReducer, walls: WallReducer };
+    const globalReducer = Store.reduceReducers(reducers);
+    const store = Store.createStore(globalReducer);
+    store.dispatch(HeroActions.moveUp);
+
     // this.hero = new Hero(store);
     this.world = new World(canvasId);
 

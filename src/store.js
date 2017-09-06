@@ -24,7 +24,7 @@ export class Store {
       Object.keys(reducers).forEach(
         (subStoreToReducerMapping) => {
           const reducer = reducers[subStoreToReducerMapping];
-          const subStore = store[subStoreToReducerMapping];
+          const subStore = store ? store[subStoreToReducerMapping] : null;
           const newSubStore = reducer(subStore, action);
 
           newStore[subStoreToReducerMapping] = newSubStore;
@@ -51,13 +51,14 @@ export class Store {
   subscribe(callback) {
     this._subscribers.push(callback);
     const unsubscribe = () => {
+      return this._subscribers; // TODO: Without callback, splice?
     };
     return unsubscribe;
   }
 
   constructor(reducer, initialState) {
-    initialState = initialState || {};
-    this._state = Object.assign({}, initialState);
+    const state = initialState || {};
+    this._state = Object.assign({}, state);
     this._reducer = reducer;
     this._subscribers = [];
   }

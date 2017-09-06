@@ -113,13 +113,16 @@ export class World {
     elapsedContainer.innerText = elapsedTime;
   }
 
-  render(hero: Hero, walls: Wall[]) {
+  // render(hero: Hero, walls: Wall[]) {
+  render() {
     const context = this.context;
     const leftEdge = 0;
     const topEdge = 0;
     context.clearRect(leftEdge, topEdge, World.WIDTH, World.HEIGHT);
+    /*
     walls.forEach((wall) => { this.renderWall(wall); });
     this.renderHero(hero);
+    */
   }
 
   renderHero(hero: Hero) {

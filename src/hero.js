@@ -49,7 +49,7 @@ export const initialState: IHeroState = {
 };
 
 export function reduce(state, action: IAction) {
-  if (state === undefined) {
+  if (!state) {
     return initialState;
   }
 
@@ -63,4 +63,4 @@ export function reduce(state, action: IAction) {
     default:
       return state;
   }
-};
+}

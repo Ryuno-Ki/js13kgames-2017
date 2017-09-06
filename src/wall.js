@@ -1,7 +1,6 @@
 //@flow
 import { Helper } from './helper';
 import type { ICartesianSystem } from './helper';
-import { World } from './world';
 
 interface IGate {
   end: number;
@@ -20,7 +19,7 @@ export class Types {
 
 export class Actions {
   static _getRandomStart(): number {
-    return 2 * Math.PI * Math.random()
+    return 2 * Math.PI * Math.random();
   }
 
   static _getRandomEnd(start: number, width: number): number {
@@ -52,10 +51,10 @@ export const initialState: IWallState = {
     end: 1,
     start: 0,
   }
-}
+};
 
 export function reduce(state, action: IAction) {
-  if (state === undefined) {
+  if (!state) {
     return initialState;
   }
 
