@@ -7,8 +7,16 @@ export interface IAction {
 
 export class Store {
   /* properties */
-  actions: any;  // FIXME should be generic object
-  store: any;  // FIXME should be generic object
+  _reducer: Function;  // TODO: Maybe there is a way to describe a IReducer?
+  _state: any;  // FIXME: should be state object
+  _subscribers: Function[];  // TODO: Maybe there is a way to describe IReducer?
+
+  static createStore(reducer, savedState) {
+    const dummyAction = { type: 'DUMMY', payload: {} };
+    const initialState = reducer(savedState, dummyAction);
+    const state = Object.assign({}, initialState, savedState);
+    return new Store(reducer, state);
+  }
 
   static reduceReducers(reducers): IReducer {
     return (store, action: IAction) => {
@@ -27,45 +35,30 @@ export class Store {
   }
 
   dispatch(action: IAction) {
-    // Destructuring assignment does not work in Node/mocha
-    const payload = action.payload;
-    const type = action.type;
-    this.update(action);
+    const previousState = this.getState();
+    const nextState = this._reducer(previousState, action);
+    this._state = nextState;
 
-    if (type in this.actions) {
-      this.actions[type].forEach((callback) => {
-        callback(payload);
-      });
-    }
+    this._subscribers.forEach((subscriber) => {
+      subscriber(nextState);
+    });
   }
 
-  get(key: string) {
-    return this.store[key];
+  getState() {
+    return this._state;
   }
 
-  // FIXME substore should be object
-  register(key: string, substore: any) {
-    this.store[key] = substore;
+  subscribe(callback) {
+    this._subscribers.push(callback);
+    const unsubscribe = () => {
+    };
+    return unsubscribe;
   }
 
-  subscribe(type: string, callback: () => mixed) {
-    if (type in this.actions) {
-      this.actions[type].push(callback);
-    } else {
-      this.actions[type] = [callback];
-    }
-  }
-
-  update(action: IAction) {
-    // Destructuring assignment does not work in Node/mocha
-    const key = action.key;
-    const payload = action.payload;
-    const substore = this.store[key];
-    this.store[key] = Object.assign(substore, payload);
-  }
-
-  constructor() {
-    this.actions = {};
-    this.store = {};
+  constructor(reducer, initialState) {
+    initialState = initialState || {};
+    this._state = Object.assign({}, initialState);
+    this._reducer = reducer;
+    this._subscribers = [];
   }
 }

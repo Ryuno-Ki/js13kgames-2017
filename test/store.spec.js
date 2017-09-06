@@ -10,12 +10,63 @@ chai.use(spies);
 const Store = require('./store').Store;
 
 describe('Store', () => {
-  xit('can create a new store', () => {
-    const newStore = Store.createStore(reducer);
+  const actionMock = { type: 'ACTION', payload: { foo: { bar: 'Yay' } } };
+  const initialState = { foo: { bar: 'baz' } };
+  const reducer = (state, action) => {
+      const newState = Object.assign({}, initialState, action.payload);
+      return newState;
+  };
+
+  it('has a getState method', () => {
+    const store = Store.createStore(reducer);
+    expect(store.getState).to.be.a('function');
+
+    const state = store.getState();
+    expect(state).to.deep.equal(initialState);
   });
 
-  xit('can hydrate a new store while creating', () => {
-    const newStore = Store.createStore(reducer, storedState);
+  it('has a dispatch method', () => {
+    const store = Store.createStore(reducer);
+    expect(store.dispatch).to.be.a('function');
+    
+    const previousState = store.getState();
+    store.dispatch(actionMock);
+    const nextState = store.getState();
+    const expected = Object.assign({}, previousState, actionMock.payload);
+    expect(nextState).to.deep.equal(expected);
+  });
+
+  it('has a subscribe method', () => {
+    const callback = () => {};
+    const callbackSpy = chai.spy(callback);
+    const store = Store.createStore(reducer);
+    expect(store.subscribe).to.be.a('function');
+
+    const unsubscribe = store.subscribe(callbackSpy);
+    expect(unsubscribe).to.be.a('function');
+
+    store.dispatch(actionMock);
+    const newState = store.getState();
+    expect(callbackSpy).to.have.been.called.with(newState);
+
+    unsubscribe();
+    store.dispatch(actionMock);
+    expect(callbackSpy).to.not.have.been.called;
+  });
+
+  describe('createStore', () => {
+    it('initialises the state tree', () => {
+      const store = Store.createStore(reducer);
+      const state = store.getState();
+      expect(state).to.deep.equal(initialState);
+    });
+
+    it('hydrates the state when passed a second argument', () => {
+      const savedState = { foo: { bar: 42 } };
+      const store = Store.createStore(reducer, savedState);
+      const state = store.getState();
+      expect(state).to.deep.equal(savedState);
+    });
   });
 
   describe('reduceReducers', () => {
@@ -41,7 +92,6 @@ describe('Store', () => {
       const reducer1Spy = chai.spy.on(reducers, 'reducer1');
       const reducer2Spy = chai.spy.on(reducers, 'reducer2');
       const stateMock = { reducer1: 'foo', reducer2: 'bar', reducer3: 'baz' };
-      const actionMock = { type: 'ACTION', payload: {} };
 
       globalReducer(stateMock, actionMock);
       expect(reducer1Spy).to.have.been.called.with('foo', actionMock);
@@ -59,143 +109,6 @@ describe('Store', () => {
         expect(newState).to.have.a.property(reducer);
       });
       expect(Object.keys(newState).length).to.equal(argumentKeys.length);
-    });
-  });
-
-  xit('can dispatch reducers', () => {
-    store.dispatch(action({foo: 'bar'}));
-  });
-
-  xit('offers a way to subscribe for changes', () => {
-    const unsubscribe = store.subscribe(callback);
-  });
-
-  xit('gets the state', () => {
-    const state = store.getState();
-  });
-
-  /*
-   * Data flow:
-   * 1. store.dispatch(action)
-   * 2. store calls reducers
-   * 3. root reducer combines substores into single store tree
-   * 4. store saves store tree returned by root reducer
-   */
-
-  let store;
-
-  beforeEach(() => {
-    store = new Store();
-  });
-
-  it('has an actions property', () => {
-    expect(store.actions).to.not.be.undefined;
-  });
-
-  it('has a store property', () => {
-    expect(store.store).to.not.be.undefined;
-  });
-
-  describe('actions', () => {
-    let actionType;
-    let key;
-    let substore;
-    let action;
-    let callback;
-
-    beforeEach(() => {
-      actionType = 'riddle';
-      key = 'answer';
-      substore = {};
-
-      action = {
-        key: key,
-        payload: substore,
-        type: actionType
-      };
-      callback = () => { return null; };
-    });
-
-    it('subscribes to an action type', () => {
-      const registeredActions = store.actions[actionType];
-      expect(registeredActions).to.be.undefined;
-      store.subscribe(actionType, callback);
-      expect(store.actions[actionType]).to.deep.equal([callback]);
-    });
-
-    it('subsribes more than once to an action type', () => {
-      const registeredActions = store.actions[actionType];
-      const expected = [callback, callback];
-
-      expect(registeredActions).to.be.undefined;
-      store.subscribe(actionType, callback);
-      store.subscribe(actionType, callback);
-      expect(store.actions[actionType]).to.deep.equal(expected);
-    });
-
-    it('invokes all callbacks', () => {
-      const key = 'answer';
-      const payload = {'is': 42};
-      const substore = {};
-
-      const action = {
-        key: key,
-        payload: payload,
-        type: 'riddle'
-      };
-      const callbackSpy = chai.spy(callback);
-      const registeredActions = store.actions[actionType];
-      expect(registeredActions).to.be.undefined;
-
-      store.register(key, substore);
-      store.subscribe(actionType, callback);
-      store.dispatch(action);
-      expect(callbackSpy).to.have.been.called;
-      // expect(callbackSpy).to.have.been.called.with(payload);
-    });
-  });
-
-  describe('substore', () => {
-    const key = 'answer';
-    const substore = {};
-
-    xit('throws an error when updating a non-registered substore', () => {
-      const action = {
-        key: key,
-        payload: substore,
-        type: 'riddle'
-      };
-  
-      const registeredSubstore = store.store[key];
-      expect(registeredSubstore).to.be.undefined;
-      store.update(action);
-      expect(registeredSubstore).to.throw;
-    });
-
-    describe('after registration of a substore', () => {
-      beforeEach(() => {
-        store.register(key, substore);
-      });
-
-      it('returns the substore', () => {
-        expect(store.store[key]).to.equal(substore);
-      });
-
-      it('allows to register a substore', () => {
-        const payload = {'is': 42};
-
-        const action = {
-          key: key,
-          payload: payload,
-          type: 'riddle'
-        };
-  
-        const registeredSubstore = store.store[key];
-        expect(registeredSubstore).to.equal(substore);
-
-        store.update(action);
-        expect(registeredSubstore).to.deep.equal(payload);
-      });
     });
   });
 });
