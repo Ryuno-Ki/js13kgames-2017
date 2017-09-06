@@ -10,6 +10,22 @@ export class Store {
   actions: any;  // FIXME should be generic object
   store: any;  // FIXME should be generic object
 
+  static reduceReducers(reducers): IReducer {
+    return (store, action: IAction) => {
+      const newStore = {};
+      Object.keys(reducers).forEach(
+        (subStoreToReducerMapping) => {
+          const reducer = reducers[subStoreToReducerMapping];
+          const subStore = store[subStoreToReducerMapping];
+          const newSubStore = reducer(subStore, action);
+
+          newStore[subStoreToReducerMapping] = newSubStore;
+        }
+      );
+      return newStore;
+    };
+  }
+
   dispatch(action: IAction) {
     // Destructuring assignment does not work in Node/mocha
     const payload = action.payload;

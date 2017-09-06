@@ -18,20 +18,48 @@ describe('Store', () => {
     const newStore = Store.createStore(reducer, storedState);
   });
 
-  xit('can combine reducers', () => {
-    const combinedReducers = Store.combineReducers({
-      reducer1,
-      reducer2
+  describe('reduceReducers', () => {
+    const reducer1 = () => { return null; };
+    const reducer2 = () => { return null; };
+    const reducers = { reducer1, reducer2 };
+    let globalReducer;
+
+    beforeEach(() => {
+      globalReducer = Store.reduceReducers(reducers);
     });
 
-    /*
-     * nextState1 = reducer1(state[reducer1], action);
-     * nextState2 = reducer2(state[reducer2], action);
-     * return {
-     *   reducer1: nextState1,
-     *   reducer2: nextState2
-     * };
-     */
+    it('accepts an object of reducers as only argument', () => {
+      expect(() => { return Store.reduceReducers(reducers); }).to.not.throw();
+    });
+
+    it('returns a new reducer', () => {
+      expect(globalReducer).to.be.a('function');
+      expect(globalReducer.length).to.equal(2);
+    });
+
+    it('passes only subset of state argument to reducer', () => {
+      const reducer1Spy = chai.spy.on(reducers, 'reducer1');
+      const reducer2Spy = chai.spy.on(reducers, 'reducer2');
+      const stateMock = { reducer1: 'foo', reducer2: 'bar', reducer3: 'baz' };
+      const actionMock = { type: 'ACTION', payload: {} };
+
+      globalReducer(stateMock, actionMock);
+      expect(reducer1Spy).to.have.been.called.with('foo', actionMock);
+      expect(reducer2Spy).to.have.been.called.with('bar', actionMock);
+    });
+
+    it('builds up a state out of the passed reducers', () => {
+      const stateMock = { reducer1: 'foo', reducer2: 'bar' };
+      const actionMock = { type: 'ACTION', payload: {} };
+      const newState = globalReducer(stateMock, actionMock);
+      const argumentKeys = Object.keys(reducers);
+      expect(newState).to.be.an('object');
+
+      argumentKeys.forEach((reducer) => {
+        expect(newState).to.have.a.property(reducer);
+      });
+      expect(Object.keys(newState).length).to.equal(argumentKeys.length);
+    });
   });
 
   xit('can dispatch reducers', () => {
