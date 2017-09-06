@@ -18,7 +18,8 @@ export default {
   input: join(__dirname, 'src', 'index.js'),
   output: {
     file: join(__dirname, 'dist', 'index.js'),
-    format: 'iife'
+    format: 'iife',
+    name: 'game'
   },
   plugins: plugins,
   sourcemap: 'inline',
