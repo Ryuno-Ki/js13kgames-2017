@@ -1,5 +1,4 @@
 //@flow
-
 interface TouchEventCallbacks {
   onDown: () => mixed;
   onLeft: () => mixed;
@@ -50,11 +49,11 @@ export class Swipe {
     this.yDown = null;
   }
 
-  onTouchMove(event: TouchEvent) {
+  onTouchMove(event: TouchEvent): void {
     this.handleTouchMove(event);
   }
 
-  onTouchStart(event: TouchEvent) {
+  onTouchStart(event: TouchEvent): void {
     this.xDown = event.touches[0].clientX;
     this.yDown = event.touches[0].clientY;
   }
