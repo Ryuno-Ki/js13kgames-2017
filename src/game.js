@@ -8,6 +8,7 @@ import { Store } from './store';
 import { Swipe } from './swipe';
 // import { Wall } from './wall';
 import { reduce as WallReducer } from './wall';
+import { Actions as WallActions } from './wall';
 import type { IWallState } from './wall';
 import { World } from './world';
 import type { IWorldState } from './world';
@@ -25,16 +26,10 @@ interface State {
   world: IWorldState;
 }
 
-// Polyfill for mocha
-const noop = () => { return null; };
-window.requestAnimationFrame = window.requestAnimationFrame || noop;
-
 export class Game {
   /* Properties */
 //   hero: Hero;
-  lastUpdateTimestamp: number;
-  startTime: Date;
-  state: State;
+  store: any;  // FIXME: Should be IStore
 //  walls: Wall[];
   world: World;
 
@@ -139,42 +134,32 @@ export class Game {
     return false;
   }
 
-  /*
-  addWall(wall: Wall) {
-    this.walls.push(wall);
-  }
-  */
-
-  draw() {
-    const hero = this.hero;
-    const walls = this.walls;
-    if (Game.detectCollision(hero, walls)) { Game.notifyUser(); }
-
-    this.world.render(hero, walls);
+  static update(world, store) {
+    const state = store.getState();
+    if (Game.detectCollision(state)) { Game.notifyUser(); }
+    world.render(store.getState());
   }
 
   init() {
-    const self = this;
-    const update = this.update;
-
-    /*
-    [1, 2, 3, 4, 5, 6].forEach((level) => {
-      const wall = new Wall(level * World.WALLDISTANCE);
-      this.addWall(wall);
-    });
-    */
-
-    this.registerArrowKeyHandlers();
+    const MAX_LEVEL = 6;
+    for (let level = 2; level < MAX_LEVEL; level++) {
+      let state = this.store.getState();
+      let walls = state.walls.walls;
+      let payload = {
+        walls: walls,
+        radius: level * 10,
+        width: World.WALLDISTANCE
+      };
+      this.store.dispatch(WallActions.add(payload));
+    }
+    // this.registerArrowKeyHandlers();
     this.registerSwipeHandlers();
-    window.requestAnimationFrame(update.bind(self));
   }
 
   onKeyDown(event: KeyboardEvent) {
     const hero = this.hero;
     const key = event.keyCode;
     const keymap = Game.KEYMAP;
-    const self = this;
-    const update = this.update;
 
     switch(key) {
       case keymap.LEFT:
@@ -197,7 +182,6 @@ export class Game {
         // eslint-disable-next-line no-console
         console.log('Received keyCode', event.keyCode);
     }
-    window.requestAnimationFrame(update.bind(self));
   }
 
   registerArrowKeyHandlers() {
@@ -207,85 +191,27 @@ export class Game {
   }
 
   registerSwipeHandlers() {
-    const hero = this.hero;
-    const self = this;
-    const update = this.update;
+    const store = this.store;
 
     const handlers = {
-      onDown: () => {
-        hero.moveDown();
-        window.requestAnimationFrame(update.bind(self));
-      },
-      onLeft: () => {
-        hero.moveLeft();
-        window.requestAnimationFrame(update.bind(self));
-      },
-      onRight: () => {
-        hero.moveRight();
-        window.requestAnimationFrame(update.bind(self));
-      },
-      onUp: () => {
-        hero.moveUp();
-        window.requestAnimationFrame(update.bind(self));
-      }
+      onDown: (distance) => {  store.dispatch(HeroActions.moveDown(distance)); },
+      onLeft: (distance) => {  store.dispatch(HeroActions.moveLeft(distance)); },
+      onRight: (distance) => { store.dispatch(HeroActions.moveRight(distance)); },
+      onUp: (distance) => { store.dispatch(HeroActions.moveUp(distance)); }
     };
 
     const swiper = new Swipe(this.world.element, handlers);
     swiper.run();
   }
 
-  update(timestamp: number) {
-    const fps = 60;
-    const progress = timestamp - this.lastUpdateTimestamp;
-    const isInitialDraw = progress < 0;
-    const self = this;
-    const update = this.update;
-
-    if (progress > fps || isInitialDraw) {
-      this.draw();
-      this.updateTimer();
-      window.requestAnimationFrame(update.bind(self));
-      this.lastUpdateTimestamp = timestamp;
-    }
-  }
-
-  updateTimer() {
-    const start = this.startTime;
-    const now = new Date();
-    const elapsed = Math.round((now - start) / 1000);
-    World.updateTimer(elapsed);
-  }
-
   constructor(canvasId: string) {
     const reducers = { user: HeroReducer, walls: WallReducer };
     const globalReducer = Store.reduceReducers(reducers);
-    const store = Store.createStore(globalReducer);
-    store.dispatch(HeroActions.moveUp);
-
-    // this.hero = new Hero(store);
+    this.store = Store.createStore(globalReducer);
     this.world = new World(canvasId);
 
-    this.startTime = new Date();
-    this.lastUpdateTimestamp = Number(new Date());
-    this.state = {
-      "user": {
-        "angle": 0,
-        "name": "Jane Doe",
-        "radius": 0,
-        "timeElapsed": (new Date()).toISOString()
-      },
-      "walls": [{
-        "gate": {
-          "start": 0,
-          "end": 1
-        },
-        "radius": 0
-      }],
-      "world": {
-        "height": World.HEIGHT,
-        "width": World.WIDTH
-      }
-    };
-    this.walls = [];
+    this.store.subscribe(() => {
+      Game.update(this.world, this.store);
+    });
   }
 }

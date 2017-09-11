@@ -13,6 +13,7 @@ export interface IWallState {
 }
 
 export class Types {
+  static get add() { return 'WALL_ADD'; }
   static get randomiseGate() { return 'WALL_RANDOMISE_GATE'; }
   static get setRadius() { return 'WALL_SET_RADIUS'; }
 }
@@ -24,6 +25,21 @@ export class Actions {
 
   static _getRandomEnd(start: number, width: number): number {
     return Helper.normaliseAngle(start + width);
+  }
+
+  static add(payload): IAction {
+    const oldWalls = payload.walls.slice();
+    const newWall = Object.assign(
+      {},
+      Actions.randomiseGate(payload.width).payload,
+      Actions.setRadius(payload.radius).payload
+    );
+    const addPayload = { walls: oldWalls.concat(newWall) };
+
+    return Object.assign({}, payload, {
+      type: Types.add,
+      payload: addPayload,
+    });
   }
 
   static randomiseGate(width: number): IAction {
@@ -46,11 +62,13 @@ export class Actions {
 }
 
 export const initialState: IWallState = {
-  radius: 1,
-  gate: {
-    end: 1,
-    start: 0,
-  }
+  walls: [{
+    radius: 10,
+    gate: {
+      end: 1,
+      start: 0,
+    }
+  }]
 };
 
 export function reduce(state, action: IAction) {
@@ -59,6 +77,7 @@ export function reduce(state, action: IAction) {
   }
 
   switch (action.type) {
+    case Types.add:
     case Types.randomiseGate:
     case Types.setRadius:
       return Object.assign({}, state, action.payload);

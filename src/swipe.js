@@ -32,15 +32,15 @@ export class Swipe {
 
     if (Math.abs(this.xDiff) > Math.abs(this.yDiff)) { // Most significant.
       if (this.xDiff > 0) {
-        handlers.onLeft();
+        handlers.onLeft(this.xDiff);
       } else {
-        handlers.onRight();
+        handlers.onRight(this.xDiff);
       }
     } else {
       if (this.yDiff > 0) {
-        handlers.onUp();
+        handlers.onUp(this.yDiff);
       } else {
-        handlers.onDown();
+        handlers.onDown(this.yDiff);
       }
     }
 

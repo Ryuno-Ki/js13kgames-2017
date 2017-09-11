@@ -113,16 +113,14 @@ export class World {
     elapsedContainer.innerText = elapsedTime;
   }
 
-  // render(hero: Hero, walls: Wall[]) {
-  render() {
+  render(state) {
     const context = this.context;
     const leftEdge = 0;
     const topEdge = 0;
+    const walls = state.walls.walls;
     context.clearRect(leftEdge, topEdge, World.WIDTH, World.HEIGHT);
-    /*
     walls.forEach((wall) => { this.renderWall(wall); });
-    this.renderHero(hero);
-    */
+    this.renderHero(state.user);
   }
 
   renderHero(hero: Hero) {
@@ -132,8 +130,10 @@ export class World {
     const size = World.USERSIZE;
     const context = this.context;
     // Destructuring assignment does not work in Node/mocha
-    const x = hero.x;
-    const y = hero.y;
+    const cartesian = Helper.mapPolarToCartesian({r: hero.radius, phi: hero.angle});
+    const center = Helper.coordinationSystemToVertex(cartesian.x, cartesian.y);
+    const x = center.p;
+    const y = center.q;
 
     // FIXME: Read from hero instance
     const hit = false;
@@ -149,9 +149,9 @@ export class World {
     const y = World.HEIGHT / 2;
     const context = this.context;
     // Destructuring assignment does not work in Node/mocha
-    const endGate = wall.endGate;
+    const endGate = wall.gate.end;
+    const startGate = wall.gate.start;
     const radius = wall.radius;
-    const startGate = wall.startGate;
 
     // FIXME: Read from hero instance
     // const hit = false;
