@@ -129,10 +129,17 @@ export class Game {
     return payload;
   }
 
+  static _getMaxLevel() {
+    const element = window.document.getElementsByTagName('input')[0];
+    const volume = 10 * parseFloat(element.value);
+    const level = 3 + parseInt(volume, 10);
+    return level;
+  }
+
   init() {
     this.store.dispatch({}, {type: 'INIT', payload: {}});
 
-    const MAX_LEVEL = 6;
+    const MAX_LEVEL = Game._getMaxLevel();
     let state;
     let walls;
     let payload;

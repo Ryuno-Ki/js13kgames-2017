@@ -1,10 +1,20 @@
+* {
+  margin-bottom: 0;
+}
+
 body {
   background-color: white;
   color: black;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 body.flash {
   background-color: red;
   color: yellow;
+}
+
+canvas {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }

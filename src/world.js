@@ -15,7 +15,16 @@ export class World {
 
   static create(id: string): HTMLCanvasElement {
     const canvas = World.createCanvas(id);
-    window.document.body.appendChild(canvas);
+    const app = window.document.getElementById('app');
+    app.appendChild(canvas);
+
+    const audioContext = new AudioContext();
+    const mute = World.createMuteButton(audioContext);
+    const brownNoise = World.createBackgroundNoise(audioContext);
+    brownNoise.connect(mute.gain);
+
+    mute.gain.connect(audioContext.destination);
+    app.appendChild(mute.button);
     return canvas;
   }
 
@@ -26,6 +35,49 @@ export class World {
     element.setAttribute('width', `${World.WIDTH}px`);
     return element;
   }
+
+  static createMuteButton(audioContext) {
+    const label = window.document.createElement('label');
+    const text = window.document.createTextNode('Volume:');
+    const element = window.document.createElement('input');
+    element.setAttribute('type', 'range');
+    element.setAttribute('min', 0);
+    element.setAttribute('max', 1);
+    element.setAttribute('step', 0.1);
+    element.innerHTML = 'Mute';
+    element.value = 0.5 * Math.random();
+
+    const gainNode = audioContext.createGain();
+    element.addEventListener('change', (event) => {
+      event.preventDefault();
+      gainNode.gain.value = parseFloat(event.target.value);
+    }, false);
+
+    label.appendChild(text);
+    label.appendChild(element);
+    return { button: label, gain: gainNode };
+  }
+
+  static createBackgroundNoise(audioContext) {
+    // Kudos https://noisehack.com/generate-noise-web-audio-api/
+    const bufferSize = 4096;
+    const brownNoise = (() => {
+        let lastOut = 0.0;
+        const node = audioContext.createScriptProcessor(bufferSize, 1, 1);
+        node.onaudioprocess = (event) => {
+            const output = event.outputBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                let white = Math.random() * 2 - 1;
+                output[i] = (lastOut + (0.02 * white)) / 1.02;
+                lastOut = output[i];
+                output[i] *= 3.5; // (roughly) compensate for gain
+            }
+        };
+        return node;
+    })();
+    return brownNoise;
+  }
+
 
   static get GATESIZE(): number {
     return 1.05 * World.USERSIZE;
