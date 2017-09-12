@@ -1,12 +1,11 @@
 //@flow
-// import { Helper } from './helper';
+import { Helper } from './helper';
 // import { Hero } from './hero';
 import { reduce as HeroReducer } from './hero';
 import { Actions as HeroActions } from './hero';
 import type { IHeroState } from './hero';
 import { Store } from './store';
 import { Swipe } from './swipe';
-// import { Wall } from './wall';
 import { reduce as WallReducer } from './wall';
 import { Actions as WallActions } from './wall';
 import type { IWallState } from './wall';
@@ -30,7 +29,6 @@ export class Game {
   /* Properties */
 //   hero: Hero;
   store: any;  // FIXME: Should be IStore
-//  walls: Wall[];
   world: World;
 
   static get KEYMAP(): Keymap {
@@ -43,19 +41,12 @@ export class Game {
   }
 
   static notifyUser() {
-    const now = (new Date()).toISOString();
-    // eslint-disable-next-line no-console
-    console.log('Hit wall', now);
     window.document.body.classList.add('flash');
     setTimeout(() => { window.document.body.classList.remove('flash'); }, 500);
   }
 
-  /*
   static compareAngle(hero: Hero, walls: Wall[]): boolean {
-    const position = Helper.mapCartesianToPolar(
-      Helper.coordinationSystemToCenter(hero.x, hero.y)
-    );
-    const positionOfHero = position.r + World.USERSIZE;
+    const positionOfHero = hero.radius + World.USERSIZE;
     const wallDistanceWalls = World.WALLDISTANCE;
 
     const collision = walls.filter((wall) => {
@@ -71,9 +62,9 @@ export class Game {
       // atan2 (hero) is measuring from x-axis counterclockwise
       // canvas is drawing from x-axis clockwise
       // hence, translate hero and normalise angles
-      const startGate = Helper.normaliseAngle(wall.startGate);
-      const endGate = Helper.normaliseAngle(wall.endGate);
-      const heroAngle = Helper.normaliseAngle(2*Math.PI - position.phi);
+      const startGate = Helper.normaliseAngle(wall.gate.start);
+      const endGate = Helper.normaliseAngle(wall.gate.end);
+      const heroAngle = Helper.normaliseAngle(hero.angle);
 
       if (startGate < heroAngle && endGate > heroAngle) {
         return false;
@@ -84,14 +75,9 @@ export class Game {
     });
     return collision;
   }
-  */
 
-  /*
   static compareRadii(hero: Hero, walls: Wall[]): boolean {
-    const position = Helper.mapCartesianToPolar(
-      Helper.coordinationSystemToCenter(hero.x, hero.y)
-    );
-    const positionOfHero = position.r + World.USERSIZE;
+    const positionOfHero = hero.radius + World.USERSIZE;
     const wallDistanceWalls = World.WALLDISTANCE;
 
     const collision = walls.map((wall) => {
@@ -108,10 +94,12 @@ export class Game {
       return true;
     }).map((wallRadius) => {
       // Does hero circle intersect with wall?
-      if (position.r - World.USERSIZE > wallRadius) {
+      if (positionOfHero + World.USERSIZE < wallRadius) {
+        // inside
         return false;
       }
-      if (position.r + World.USERSIZE < wallRadius) {
+      if (positionOfHero - World.USERSIZE > wallRadius) {
+        // outside
         return false;
       }
       return true;
@@ -121,17 +109,13 @@ export class Game {
     });
     return collision;
   }
-  */
 
-  /*
-  static detectCollision(hero: Hero, walls: Wall[]): boolean {
+  static detectCollision(state): boolean {
+    const hero = state.user;
+    const walls = state.walls.walls;
     const hitWallBecauseOfAngle = Game.compareAngle(hero, walls);
     const hitWallBecauseOfRadius = Game.compareRadii(hero, walls);
     return hitWallBecauseOfAngle && hitWallBecauseOfRadius;
-  }
-  */
-  static detectCollision(): boolean {
-    return false;
   }
 
   static update(world, store) {
@@ -140,42 +124,61 @@ export class Game {
     world.render(store.getState());
   }
 
+  static _buildHeroPayload(state, distance) {
+    const payload = Object.assign({}, state.user, {distance: distance});
+    return payload;
+  }
+
   init() {
+    this.store.dispatch({}, {type: 'INIT', payload: {}});
+
     const MAX_LEVEL = 6;
+    let state;
+    let walls;
+    let payload;
+
     for (let level = 2; level < MAX_LEVEL; level++) {
-      let state = this.store.getState();
-      let walls = state.walls.walls;
-      let payload = {
+      state = this.store.getState();
+      walls = state.walls.walls;
+      payload = {
         walls: walls,
-        radius: level * 10,
-        width: World.WALLDISTANCE
+        radius: level * World.WALLDISTANCE,
+        width: World.GATESIZE
       };
       this.store.dispatch(WallActions.add(payload));
     }
-    // this.registerArrowKeyHandlers();
+    this.registerArrowKeyHandlers();
     this.registerSwipeHandlers();
+
+    // In order to not confuse the user when hitting left or right
+    state = this.store.getState();
+    payload = Game._buildHeroPayload(state, 5);
+    this.store.dispatch(HeroActions.moveUp(payload));
   }
 
   onKeyDown(event: KeyboardEvent) {
-    const hero = this.hero;
     const key = event.keyCode;
     const keymap = Game.KEYMAP;
+    const store = this.store;
+    const state = store.getState();
+    const distance = 5;
+    const payload = Game._buildHeroPayload(state, distance);
 
     switch(key) {
       case keymap.LEFT:
-        hero.moveLeft();
+        store.dispatch(HeroActions.moveLeft(payload));
         event.preventDefault();
         break;
       case keymap.UP:
-        hero.moveUp();
+        store.dispatch(HeroActions.moveUp(payload));
         event.preventDefault();
         break;
       case keymap.RIGHT:
-        hero.moveRight();
+        store.dispatch(HeroActions.moveRight(payload));
         event.preventDefault();
         break;
       case keymap.DOWN:
-        hero.moveDown();
+        store.dispatch(HeroActions.moveDown(payload));
         event.preventDefault();
         break;
       default:
@@ -194,10 +197,26 @@ export class Game {
     const store = this.store;
 
     const handlers = {
-      onDown: (distance) => {  store.dispatch(HeroActions.moveDown(distance)); },
-      onLeft: (distance) => {  store.dispatch(HeroActions.moveLeft(distance)); },
-      onRight: (distance) => { store.dispatch(HeroActions.moveRight(distance)); },
-      onUp: (distance) => { store.dispatch(HeroActions.moveUp(distance)); }
+      onDown: (distance) => {
+        const state = store.getState();
+        const payload = Game._buildHeroPayload(state, distance);
+        store.dispatch(HeroActions.moveDown(payload));
+      },
+      onLeft: (distance) => {
+        const state = store.getState();
+        const payload = Game._buildHeroPayload(state, distance);
+        store.dispatch(HeroActions.moveLeft(payload));
+      },
+      onRight: (distance) => {
+        const state = store.getState();
+        const payload = Game._buildHeroPayload(state, distance);
+        store.dispatch(HeroActions.moveRight(payload));
+      },
+      onUp: (distance) => {
+        const state = store.getState();
+        const payload = Game._buildHeroPayload(state, distance);
+        store.dispatch(HeroActions.moveUp(payload));
+      }
     };
 
     const swiper = new Swipe(this.world.element, handlers);

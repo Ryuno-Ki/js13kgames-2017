@@ -1,6 +1,7 @@
 //@flow
 import { Helper } from './helper';
 import type { ICartesianSystem } from './helper';
+import { World } from './world';
 
 interface IGate {
   end: number;
@@ -63,9 +64,9 @@ export class Actions {
 
 export const initialState: IWallState = {
   walls: [{
-    radius: 10,
+    radius: World.WALLDISTANCE,
     gate: {
-      end: 1,
+      end: World.GATESIZE,
       start: 0,
     }
   }]

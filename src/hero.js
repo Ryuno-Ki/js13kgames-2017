@@ -1,5 +1,6 @@
 //@flow
 import type { IAction } from './store';
+import { Helper } from './helper';
 
 export interface IHeroState {
   angle: number;
@@ -14,31 +15,35 @@ export class Types {
 }
 
 export class Actions {
-  static moveDown(distance: number): IAction {
+  static moveDown(payload): IAction {
+    const distance = payload.distance;
     return {
       type: Types.moveDown,
-      payload: { radius: -distance }
+      payload: { radius: payload.radius - distance }
     };
   }
 
-  static moveLeft(distance: number): IAction {
+  static moveLeft(payload): IAction {
+    const distance = Helper.mapDegreeToRadians(3 * payload.distance);
     return {
       type: Types.moveLeft,
-      payload: { angle: -distance }
+      payload: { angle: payload.angle - distance }
     };
   }
 
-  static moveRight(distance: number): IAction {
+  static moveRight(payload): IAction {
+    const distance = Helper.mapDegreeToRadians(3 * payload.distance);
     return {
       type: Types.moveRight,
-      payload: { angle: distance }
+      payload: { angle: payload.angle + distance }
     };
   }
 
-  static moveUp(distance: number): IAction {
+  static moveUp(payload): IAction {
+    const distance = payload.distance;
     return {
       type: Types.moveUp,
-      payload: { radius: distance }
+      payload: { radius: payload.radius + distance }
     };
   }
 }

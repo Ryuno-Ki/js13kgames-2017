@@ -16,27 +16,7 @@ export class World {
   static create(id: string): HTMLCanvasElement {
     const canvas = World.createCanvas(id);
     window.document.body.appendChild(canvas);
-
-    const container = World.createContainer();
-    const level = World.createLevel();
-    const label = World.createAngleInput();
-    container.appendChild(level);
-    container.appendChild(label);
-    window.document.body.appendChild(container);
     return canvas;
-  }
-
-  static createAngleInput(): HTMLElement {
-    const label = window.document.createElement('label');
-    const labelText = window.document.createTextNode('Angle in degree');
-    const input = window.document.createElement('input');
-    input.setAttribute('id', 'angle');
-    input.setAttribute('min', '1');
-    input.setAttribute('type', 'number');
-    input.setAttribute('value', '5');
-    label.appendChild(labelText);
-    label.appendChild(input);
-    return label;
   }
 
   static createCanvas(id: string): HTMLCanvasElement {
@@ -47,27 +27,8 @@ export class World {
     return element;
   }
 
-  static createContainer(): HTMLElement {
-    const container = window.document.createElement('div');
-    return container;
-  }
-
-  static createLevel(): HTMLElement {
-    const label = window.document.createElement('label');
-    const labelText = window.document.createTextNode('Level');
-    const input = window.document.createElement('input');
-    input.setAttribute('id', 'level');
-    input.setAttribute('min', '1');
-    input.setAttribute('type', 'number');
-    input.setAttribute('value', '5');
-    label.appendChild(labelText);
-    label.appendChild(input);
-    return label;
-  }
-
   static get GATESIZE(): number {
-    //return 1.05 * World.USERSIZE;
-    return 0.15;
+    return 1.05 * World.USERSIZE;
   }
 
   static get HEIGHT(): number {
@@ -95,22 +56,11 @@ export class World {
   }
 
   static get WALLDISTANCE(): number {
-    /*
-    const input = window.document.getElementById('level');
-    const level = parseInt(input.value, 10);
-    const scaling = 0.5 / (level + 1);
-    return scaling * (World.HEIGHT + World.WIDTH) / 2;
-    */
    return 0.06 * (World.HEIGHT + World.WIDTH) / 2;
   }
 
   static get WIDTH(): number {
     return Math.min(window.innerHeight, window.innerWidth);
-  }
-
-  static updateTimer(elapsedTime) {
-    const elapsedContainer = window.document.getElementById('elapsed');
-    elapsedContainer.innerText = elapsedTime;
   }
 
   render(state) {
@@ -135,10 +85,6 @@ export class World {
     const x = center.p;
     const y = center.q;
 
-    // FIXME: Read from hero instance
-    const hit = false;
-    context.fillStyle = hit ? 'red' : 'black';
-
     context.beginPath();
     context.arc(x, y, size, startAngle, endAngle);
     context.fill();
@@ -152,10 +98,6 @@ export class World {
     const endGate = wall.gate.end;
     const startGate = wall.gate.start;
     const radius = wall.radius;
-
-    // FIXME: Read from hero instance
-    // const hit = false;
-    // context.strokeStyle = hit ? 'red' : 'black';
 
     // Since the gate shall be spared out from circle, switch its start
     // and end when drawing the arc
